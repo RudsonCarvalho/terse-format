@@ -106,6 +106,11 @@
     .inst{color:var(--green)}
     .clinks{display:flex;gap:12px;flex-wrap:wrap;font-size:.85rem;margin-top:4px}
 
+    .callout{margin-top:32px;border-left:3px solid var(--accent);background:var(--surface);border-radius:0 8px 8px 0;padding:20px 24px}
+    .callout h4{font-family:var(--mono);font-size:.85rem;font-weight:700;color:var(--accent);margin-bottom:10px;letter-spacing:.02em}
+    .callout p{font-size:.88rem;color:var(--muted);line-height:1.65}
+    .callout strong{color:var(--text)}
+
     .splinks{display:flex;gap:12px;flex-wrap:wrap}
 
     footer{border-top:1px solid var(--border);padding:32px 0;color:var(--muted);font-size:.85rem;text-align:center}
@@ -316,6 +321,10 @@
         <h3>Recursive structure</h3>
         <p>All constructs nest arbitrarily. Objects inside arrays inside schema arrays &mdash; all valid, all compact. No flat-only limitations like TOON or CSV.</p>
       </div>
+    </div>
+    <div class="callout">
+      <h4>Why not compress further?</h4>
+      <p>TERSE is optimized for the intersection of two constraints: <strong>token efficiency</strong> and <strong>human auditability</strong>. Further compression techniques — key abbreviation, binary type encoding, dictionary compression — would yield additional token savings but would break the ability to inspect, debug, and audit payloads without tooling. <strong>For LLM pipelines in production, auditability is a safety property, not just a convenience.</strong></p>
     </div>
   </div>
 </section>
