@@ -90,6 +90,7 @@ Equivalent JSON would repeat `"id"`, `"name"`, `"role"`, `"active"` on every row
 |---|---|---|
 | TypeScript / JavaScript | [terse-js](https://github.com/RudsonCarvalho/terse-js) | [![CI](https://github.com/RudsonCarvalho/terse-js/actions/workflows/ci.yml/badge.svg)](https://github.com/RudsonCarvalho/terse-js/actions/workflows/ci.yml) |
 | Python | [terse-py](https://github.com/RudsonCarvalho/terse-py) | [![CI](https://github.com/RudsonCarvalho/terse-py/actions/workflows/ci.yml/badge.svg)](https://github.com/RudsonCarvalho/terse-py/actions/workflows/ci.yml) |
+| Java | [terse-java](https://github.com/RudsonCarvalho/terse-java) | [![CI](https://github.com/RudsonCarvalho/terse-java/actions/workflows/ci.yml/badge.svg)](https://github.com/RudsonCarvalho/terse-java/actions/workflows/ci.yml) |
 
 ## Specification
 
