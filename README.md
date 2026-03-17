@@ -84,6 +84,10 @@ users:
 
 Equivalent JSON would repeat `"id"`, `"name"`, `"role"`, `"active"` on every row.
 
+## Why not compress further?
+
+TERSE is optimized for the intersection of two constraints: token efficiency and human auditability. Further compression techniques — key abbreviation, binary type encoding, dictionary compression — would yield additional token savings but would break the ability to inspect, debug, and audit payloads without tooling. For LLM pipelines in production, auditability is a safety property, not just a convenience.
+
 ## Implementations
 
 | Language | Repo | CI |
