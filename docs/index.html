@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TERSE &mdash; Token-Efficient Serialization for LLMs</title>
+  <style>
+    :root {
+      --bg:      #0d1117;
+      --surface: #161b22;
+      --border:  #30363d;
+      --muted:   #8b949e;
+      --text:    #e6edf3;
+      --accent:  #58a6ff;
+      --green:   #3fb950;
+      --yellow:  #d29922;
+      --purple:  #bc8cff;
+      --orange:  #ffa657;
+      --red:     #ff7b72;
+      --mono: "JetBrains Mono","Fira Code","Cascadia Code",ui-monospace,monospace;
+      --sans: -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:16px;line-height:1.6}
+    a{color:var(--accent);text-decoration:none}
+    a:hover{text-decoration:underline}
+    .container{max-width:960px;margin:0 auto;padding:0 24px}
+
+    nav{border-bottom:1px solid var(--border);padding:14px 0;position:sticky;top:0;z-index:10;background:rgba(13,17,23,.92);backdrop-filter:blur(8px)}
+    nav .inner{max-width:960px;margin:0 auto;padding:0 24px;display:flex;align-items:center;gap:24px}
+    .logo{font-family:var(--mono);font-size:1.1rem;font-weight:700;color:var(--text);letter-spacing:.04em}
+    .logo span{color:var(--accent)}
+    .nav-links{margin-left:auto;display:flex;gap:20px;font-size:.9rem}
+    .nav-links a{color:var(--muted)}
+    .nav-links a:hover{color:var(--text);text-decoration:none}
+
+    #hero{padding:80px 0 64px;text-align:center}
+    .badge{display:inline-block;font-family:var(--mono);font-size:.78rem;border:1px solid var(--border);border-radius:20px;padding:4px 14px;color:var(--muted);margin-bottom:24px}
+    #hero h1{font-family:var(--mono);font-size:clamp(2.8rem,8vw,5rem);font-weight:800;letter-spacing:-.02em;line-height:1;background:linear-gradient(135deg,#e6edf3 0%,var(--accent) 60%,var(--purple) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:20px}
+    .tagline{font-size:1.2rem;color:var(--muted);max-width:540px;margin:0 auto 36px}
+    .tagline strong{color:var(--text)}
+    .cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+    .btn{display:inline-flex;align-items:center;gap:6px;padding:10px 20px;border-radius:6px;font-size:.9rem;font-weight:600;transition:opacity .15s,transform .1s}
+    .btn:hover{opacity:.85;text-decoration:none;transform:translateY(-1px)}
+    .btn-primary{background:var(--accent);color:#0d1117}
+    .btn-secondary{background:var(--surface);color:var(--text);border:1px solid var(--border)}
+
+    .stats{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:48px;padding-top:48px;border-top:1px solid var(--border)}
+    .stat{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:16px 24px;text-align:center}
+    .stat .value{font-family:var(--mono);font-size:1.8rem;font-weight:700;color:var(--accent)}
+    .stat .label{font-size:.8rem;color:var(--muted);margin-top:2px}
+
+    section{padding:64px 0}
+    section+section{border-top:1px solid var(--border)}
+    h2{font-size:1.6rem;font-weight:700;margin-bottom:8px}
+    .sub{color:var(--muted);font-size:1rem;margin-bottom:36px}
+
+    .compare{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    @media(max-width:640px){.compare{grid-template-columns:1fr}}
+
+    .code-panel{background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden}
+    .ph{display:flex;align-items:center;gap:8px;padding:10px 16px;border-bottom:1px solid var(--border);font-family:var(--mono);font-size:.8rem;color:var(--muted)}
+    .dot{width:10px;height:10px;border-radius:50%}
+    .tok{margin-left:auto;font-size:.75rem;padding:2px 8px;border-radius:4px;font-weight:600}
+    .tok-bad{background:rgba(255,123,114,.15);color:var(--red)}
+    .tok-ok{background:rgba(63,185,80,.15);color:var(--green)}
+
+    pre{font-family:var(--mono);font-size:.85rem;line-height:1.6;padding:20px;overflow-x:auto}
+
+    .k{color:var(--accent)}
+    .s{color:var(--green)}
+    .n{color:var(--orange)}
+    .b{color:var(--purple)}
+    .p{color:var(--muted)}
+    .sc{color:var(--yellow);font-weight:700}
+    .cm{color:#484f58;font-style:italic}
+    .kw{color:var(--accent);font-style:italic}
+
+    .tbl{width:100%;border-collapse:collapse;font-size:.9rem}
+    .tbl th,.tbl td{padding:10px 14px;text-align:left}
+    .tbl th{background:var(--surface);color:var(--muted);font-weight:600;font-size:.8rem;letter-spacing:.05em;text-transform:uppercase;border-bottom:1px solid var(--border)}
+    .tbl td{border-bottom:1px solid rgba(48,54,61,.6)}
+    .tbl tr:last-child td{border-bottom:none}
+    .tbl tr:hover td{background:rgba(22,27,34,.8)}
+    .hl{color:var(--green);font-weight:700;font-family:var(--mono)}
+    .na{color:var(--muted);font-size:.8rem}
+    .bw{display:flex;align-items:center;gap:8px}
+    .bar{height:6px;border-radius:3px;background:var(--green)}
+    .by{background:var(--yellow)}
+    .bb{background:var(--accent)}
+
+    .grid5{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
+    .card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:20px}
+    .card .num{font-family:var(--mono);font-size:.75rem;font-weight:700;color:var(--accent);letter-spacing:.08em;margin-bottom:8px}
+    .card h3{font-size:1rem;margin-bottom:6px}
+    .card p{font-size:.85rem;color:var(--muted);line-height:1.55}
+    .card code{font-family:var(--mono);font-size:.8rem;background:rgba(88,166,255,.1);color:var(--accent);padding:1px 5px;border-radius:3px}
+
+    .igrid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    @media(max-width:600px){.igrid{grid-template-columns:1fr}}
+    .icard{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:24px;display:flex;flex-direction:column;gap:12px}
+    .icard .lang{font-family:var(--mono);font-size:.75rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+    .icard h3{font-size:1.1rem}
+    .icard pre{background:var(--bg);border-radius:6px;padding:14px;font-size:.8rem;margin:0}
+    .inst{color:var(--green)}
+    .clinks{display:flex;gap:12px;flex-wrap:wrap;font-size:.85rem;margin-top:4px}
+
+    .splinks{display:flex;gap:12px;flex-wrap:wrap}
+
+    footer{border-top:1px solid var(--border);padding:32px 0;color:var(--muted);font-size:.85rem;text-align:center}
+    footer a{color:var(--muted)}
+    footer a:hover{color:var(--text)}
+    .ghost{color:#484f58}
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="inner">
+    <span class="logo">TER<span>SE</span></span>
+    <div class="nav-links">
+      <a href="#compare">Examples</a>
+      <a href="#savings">Savings</a>
+      <a href="#why">Why TERSE</a>
+      <a href="#implementations">Install</a>
+      <a href="#spec">Spec</a>
+      <a href="https://github.com/RudsonCarvalho/terse-format">GitHub</a>
+    </div>
+  </div>
+</nav>
+
+<section id="hero">
+  <div class="container">
+    <div class="badge">Draft v0.5 &middot; Full JSON data model &middot; CC BY 4.0</div>
+    <h1>TERSE</h1>
+    <p class="tagline">A <strong>token-efficient</strong> alternative to JSON, built for LLMs &mdash; covers the full JSON data model with <strong>30&ndash;55% fewer tokens</strong>.</p>
+    <div class="cta">
+      <a href="#compare" class="btn btn-primary">See it in action</a>
+      <a href="spec/TERSE-Spec-v0.5.pdf" class="btn btn-secondary">Read the spec</a>
+      <a href="https://github.com/RudsonCarvalho/terse-format" class="btn btn-secondary">GitHub</a>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="value">30&ndash;55%</div><div class="label">fewer tokens vs JSON</div></div>
+      <div class="stat"><div class="value">100%</div><div class="label">JSON data model coverage</div></div>
+      <div class="stat"><div class="value">5</div><div class="label">design principles</div></div>
+      <div class="stat"><div class="value">2</div><div class="label">reference implementations</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="compare">
+  <div class="container">
+    <h2>JSON vs TERSE</h2>
+    <p class="sub">Same data, ~44% fewer tokens &mdash; no information lost.</p>
+    <div class="compare">
+      <div class="code-panel">
+        <div class="ph">
+          <div class="dot" style="background:#ff5f57"></div>
+          <span>config.json</span>
+          <span class="tok tok-bad">~85 tokens</span>
+        </div>
+        <pre><span class="p">{</span>
+  <span class="s">"name"</span><span class="p">:</span> <span class="s">"my-app"</span><span class="p">,</span>
+  <span class="s">"version"</span><span class="p">:</span> <span class="s">"2.1.0"</span><span class="p">,</span>
+  <span class="s">"private"</span><span class="p">:</span> <span class="b">true</span><span class="p">,</span>
+  <span class="s">"port"</span><span class="p">:</span> <span class="n">3000</span><span class="p">,</span>
+  <span class="s">"debug"</span><span class="p">:</span> <span class="b">false</span><span class="p">,</span>
+  <span class="s">"tags"</span><span class="p">:</span> <span class="p">[</span><span class="s">"web"</span><span class="p">,</span> <span class="s">"typescript"</span><span class="p">,</span> <span class="s">"spa"</span><span class="p">],</span>
+  <span class="s">"author"</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s">"name"</span><span class="p">:</span> <span class="s">"Alice"</span><span class="p">,</span>
+    <span class="s">"email"</span><span class="p">:</span> <span class="s">"alice@co.com"</span>
+  <span class="p">}</span>
+<span class="p">}</span></pre>
+      </div>
+      <div class="code-panel">
+        <div class="ph">
+          <div class="dot" style="background:#3fb950"></div>
+          <span>config.terse</span>
+          <span class="tok tok-ok">~48 tokens</span>
+        </div>
+        <pre><span class="k">name</span><span class="p">:</span> my-app
+<span class="k">version</span><span class="p">:</span> 2.1.0
+<span class="k">private</span><span class="p">:</span> <span class="b">T</span>
+<span class="k">port</span><span class="p">:</span> <span class="n">3000</span>
+<span class="k">debug</span><span class="p">:</span> <span class="b">F</span>
+<span class="k">tags</span><span class="p">:</span> <span class="p">[</span>web typescript spa<span class="p">]</span>
+<span class="k">author</span><span class="p">:</span> <span class="p">{</span><span class="k">name</span><span class="p">:</span>Alice <span class="k">email</span><span class="p">:</span>alice@co.com<span class="p">}</span></pre>
+      </div>
+    </div>
+
+    <p style="margin:40px 0 10px;font-weight:600">Schema arrays &mdash; the biggest win for tabular data</p>
+    <p style="color:var(--muted);font-size:.9rem;margin-bottom:16px">When all array elements share the same keys, TERSE declares fields once and lists values positionally. Every repeated key name disappears.</p>
+    <div class="compare">
+      <div class="code-panel">
+        <div class="ph">
+          <div class="dot" style="background:#ff5f57"></div>
+          <span>users.json</span>
+          <span class="tok tok-bad">~110 tokens</span>
+        </div>
+        <pre><span class="p">{</span> <span class="s">"users"</span><span class="p">: [</span>
+  <span class="p">{</span><span class="s">"id"</span><span class="p">:</span><span class="n">1</span><span class="p">,</span><span class="s">"name"</span><span class="p">:</span><span class="s">"Ana Lima"</span><span class="p">,</span>
+   <span class="s">"role"</span><span class="p">:</span><span class="s">"admin"</span><span class="p">,</span><span class="s">"active"</span><span class="p">:</span><span class="b">true</span><span class="p">},</span>
+  <span class="p">{</span><span class="s">"id"</span><span class="p">:</span><span class="n">2</span><span class="p">,</span><span class="s">"name"</span><span class="p">:</span><span class="s">"Bruno Melo"</span><span class="p">,</span>
+   <span class="s">"role"</span><span class="p">:</span><span class="s">"editor"</span><span class="p">,</span><span class="s">"active"</span><span class="p">:</span><span class="b">true</span><span class="p">},</span>
+  <span class="p">{</span><span class="s">"id"</span><span class="p">:</span><span class="n">3</span><span class="p">,</span><span class="s">"name"</span><span class="p">:</span><span class="s">"Carla Neves"</span><span class="p">,</span>
+   <span class="s">"role"</span><span class="p">:</span><span class="s">"viewer"</span><span class="p">,</span><span class="s">"active"</span><span class="p">:</span><span class="b">false</span><span class="p">}</span>
+<span class="p">]}</span></pre>
+      </div>
+      <div class="code-panel">
+        <div class="ph">
+          <div class="dot" style="background:#3fb950"></div>
+          <span>users.terse</span>
+          <span class="tok tok-ok">~48 tokens</span>
+        </div>
+        <pre><span class="k">users</span><span class="p">:</span>
+  <span class="sc">#[id name role active]</span>
+  <span class="n">1</span> <span class="s">"Ana Lima"</span>    admin  <span class="b">T</span>
+  <span class="n">2</span> <span class="s">"Bruno Melo"</span>  editor <span class="b">T</span>
+  <span class="n">3</span> <span class="s">"Carla Neves"</span> viewer <span class="b">F</span></pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="savings">
+  <div class="container">
+    <h2>Token savings by document type</h2>
+    <p class="sub">Measured with <code style="font-family:var(--mono);color:var(--muted)">cl100k_base</code> (GPT-3.5 / GPT-4). TOON and CSV are N/A for nested types &mdash; they cannot represent those structures.</p>
+    <table class="tbl">
+      <thead>
+        <tr>
+          <th>Document type</th>
+          <th>TERSE vs JSON</th>
+          <th>TOON vs JSON</th>
+          <th>CSV vs JSON</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>App config (package.json style)</td>
+          <td><div class="bw"><div class="bar" style="width:45px"></div><span class="hl">35&ndash;45%</span></div></td>
+          <td><div class="bw"><div class="bar by" style="width:17px"></div><span>15&ndash;20%</span></div></td>
+          <td><span class="na">N/A</span></td>
+        </tr>
+        <tr>
+          <td>User list (flat, 5 records)</td>
+          <td><div class="bw"><div class="bar" style="width:52px"></div><span class="hl">40&ndash;55%</span></div></td>
+          <td><div class="bw"><div class="bar by" style="width:52px"></div><span>40&ndash;55%</span></div></td>
+          <td><div class="bw"><div class="bar bb" style="width:52px"></div><span>40&ndash;55%</span></div></td>
+        </tr>
+        <tr>
+          <td>Structured logs (5 entries)</td>
+          <td><div class="bw"><div class="bar" style="width:41px"></div><span class="hl">35&ndash;45%</span></div></td>
+          <td><div class="bw"><div class="bar by" style="width:41px"></div><span>35&ndash;45%</span></div></td>
+          <td><div class="bw"><div class="bar bb" style="width:41px"></div><span>35&ndash;45%</span></div></td>
+        </tr>
+        <tr>
+          <td>Product catalog (nested + array)</td>
+          <td><div class="bw"><div class="bar" style="width:36px"></div><span class="hl">30&ndash;40%</span></div></td>
+          <td><div class="bw"><div class="bar by" style="width:12px"></div><span>10&ndash;15%</span></div></td>
+          <td><span class="na">N/A</span></td>
+        </tr>
+        <tr>
+          <td>Complex order (deep nesting)</td>
+          <td><div class="bw"><div class="bar" style="width:31px"></div><span class="hl">25&ndash;35%</span></div></td>
+          <td><div class="bw"><div class="bar by" style="width:7px"></div><span>5&ndash;10%</span></div></td>
+          <td><span class="na">N/A</span></td>
+        </tr>
+        <tr>
+          <td>AI tool call payload (deep)</td>
+          <td><div class="bw"><div class="bar" style="width:26px"></div><span class="hl">20&ndash;30%</span></div></td>
+          <td><div class="bw"><div class="bar by" style="width:7px"></div><span>5&ndash;10%</span></div></td>
+          <td><span class="na">N/A</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section id="why">
+  <div class="container">
+    <h2>Why TERSE</h2>
+    <p class="sub">Five principles that explain every design decision.</p>
+    <div class="grid5">
+      <div class="card">
+        <div class="num">01</div>
+        <h3>Bare strings</h3>
+        <p>Identifiers and common values require no quotation marks. <code>production</code> stays <code>production</code>, not <code>"production"</code>. Quotes are reserved for strings that actually need them.</p>
+      </div>
+      <div class="card">
+        <div class="num">02</div>
+        <h3>Compact primitives</h3>
+        <p><code>null</code>, <code>true</code>, and <code>false</code> become single characters: <code>~</code>, <code>T</code>, <code>F</code>. Three of the most common values in any payload, each reduced to one token.</p>
+      </div>
+      <div class="card">
+        <div class="num">03</div>
+        <h3>Implicit delimiters</h3>
+        <p>Spaces separate values inside objects and arrays. No trailing commas, no colons between array elements. Structure is implied by position, not punctuation.</p>
+      </div>
+      <div class="card">
+        <div class="num">04</div>
+        <h3>Schema arrays</h3>
+        <p>Uniform arrays declare fields once with <code>#[f1 f2 f3]</code>, then list values positionally. For tabular data with many rows, this eliminates every repeated key name.</p>
+      </div>
+      <div class="card">
+        <div class="num">05</div>
+        <h3>Recursive structure</h3>
+        <p>All constructs nest arbitrarily. Objects inside arrays inside schema arrays &mdash; all valid, all compact. No flat-only limitations like TOON or CSV.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="implementations">
+  <div class="container">
+    <h2>Implementations</h2>
+    <p class="sub">Reference implementations with full spec coverage and 100% round-trip guarantee.</p>
+    <div class="igrid">
+      <div class="icard">
+        <div class="lang">TypeScript / JavaScript</div>
+        <h3>terse-js</h3>
+        <pre><span class="inst">npm install terse-js</span></pre>
+        <pre><span class="kw">import</span> <span class="p">{</span> serialize<span class="p">,</span> parse <span class="p">}</span> <span class="kw">from</span> <span class="s">"terse-js"</span><span class="p">;</span>
+
+serialize<span class="p">({</span> a<span class="p">:</span> <span class="n">1</span><span class="p">,</span> b<span class="p">:</span> <span class="b">true</span> <span class="p">});</span>
+<span class="cm">// "{a:1 b:T}"</span>
+
+parse<span class="p">(</span><span class="s">"{name:Alice age:30}"</span><span class="p">);</span>
+<span class="cm">// { name: "Alice", age: 30 }</span></pre>
+        <div class="clinks">
+          <a href="https://github.com/RudsonCarvalho/terse-js">GitHub</a>
+          <a href="https://github.com/RudsonCarvalho/terse-js/actions"><img src="https://github.com/RudsonCarvalho/terse-js/actions/workflows/ci.yml/badge.svg" alt="CI" style="vertical-align:middle;height:18px" /></a>
+        </div>
+      </div>
+      <div class="icard">
+        <div class="lang">Python</div>
+        <h3>terse-py</h3>
+        <pre><span class="inst">pip install terse-py</span></pre>
+        <pre><span class="kw">from</span> terse <span class="kw">import</span> serialize<span class="p">,</span> parse
+
+serialize<span class="p">({</span><span class="s">"a"</span><span class="p">:</span> <span class="n">1</span><span class="p">,</span> <span class="s">"b"</span><span class="p">:</span> <span class="b">True</span><span class="p">})</span>
+<span class="cm"># "{a:1 b:T}"</span>
+
+parse<span class="p">(</span><span class="s">"{name:Alice age:30}"</span><span class="p">)</span>
+<span class="cm"># {"name": "Alice", "age": 30}</span></pre>
+        <div class="clinks">
+          <a href="https://github.com/RudsonCarvalho/terse-py">GitHub</a>
+          <a href="https://github.com/RudsonCarvalho/terse-py/actions"><img src="https://github.com/RudsonCarvalho/terse-py/actions/workflows/ci.yml/badge.svg" alt="CI" style="vertical-align:middle;height:18px" /></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="spec">
+  <div class="container">
+    <h2>Specification</h2>
+    <p class="sub">TERSE-Spec-v0.5 &middot; Draft &middot; CC BY 4.0</p>
+    <div class="splinks">
+      <a href="spec/TERSE-Spec-v0.5.pdf"  class="btn btn-primary">Download PDF</a>
+      <a href="spec/TERSE-Spec-v0.5.docx" class="btn btn-secondary">Download DOCX</a>
+      <a href="spec/abnf/terse.abnf"       class="btn btn-secondary">ABNF Grammar</a>
+      <a href="https://github.com/RudsonCarvalho/terse-format/tree/main/examples" class="btn btn-secondary">Examples</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <p><strong>TERSE</strong> &middot; Draft v0.5 &middot; <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> &middot; <a href="https://github.com/RudsonCarvalho/terse-format">github.com/RudsonCarvalho/terse-format</a></p>
+    <p style="margin-top:8px" class="ghost">Implementations: MIT &middot; <a href="https://github.com/RudsonCarvalho/terse-js">terse-js</a> &middot; <a href="https://github.com/RudsonCarvalho/terse-py">terse-py</a></p>
+  </div>
+</footer>
+
+</body>
+</html>
