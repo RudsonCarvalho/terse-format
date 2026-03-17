@@ -275,6 +275,14 @@
         </tr>
       </tbody>
     </table>
+
+    <div style="margin-top:28px;padding:20px 24px;background:var(--surface);border:1px solid var(--border);border-radius:8px;font-size:.875rem;line-height:1.7;color:var(--muted)">
+      <p style="margin-bottom:10px"><strong style="color:var(--text)">How to read this table:</strong></p>
+      <p style="margin-bottom:8px"><span style="color:var(--text);font-weight:600">App config &amp; structured configs</span> &mdash; TERSE saves 35&ndash;45% because configs are typically shallow objects with nested sub-objects. TOON only manages 15&ndash;20% here: it handles flat rows well but falls apart as soon as nesting appears.</p>
+      <p style="margin-bottom:8px"><span style="color:var(--text);font-weight:600">User lists &amp; logs</span> &mdash; All three formats perform similarly (~40&ndash;55%). This is the <em>easy case</em>: flat, uniform, tabular data where every format shines. If your data always looks like this, any option works.</p>
+      <p style="margin-bottom:12px"><span style="color:var(--text);font-weight:600">Product catalogs, orders, AI payloads</span> &mdash; This is where TERSE separates itself. TOON drops to 5&ndash;15% because it cannot represent nested objects at all. CSV disappears entirely (N/A). TERSE holds 20&ndash;40% savings even in deeply nested structures.</p>
+      <p style="color:var(--accent);font-weight:600">The core message: TOON and CSV only win on flat, uniform data &mdash; the easy case. TERSE delivers consistent savings across <em>every</em> structure, including the complex cases that dominate real LLM pipelines: tool call payloads, RAG context chunks, nested API responses, and layered configurations.</p>
+    </div>
   </div>
 </section>
 
