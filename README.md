@@ -2,6 +2,7 @@
 
 [![Spec](https://img.shields.io/badge/spec-Draft_v0.5-blue)](spec/TERSE-Spec-v0.5.pdf)
 [![License: CC BY 4.0](https://img.shields.io/badge/License-CC_BY_4.0-lightgrey.svg)](https://creativecommons.org/licenses/by/4.0/)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19058364.svg)](https://doi.org/10.5281/zenodo.19058364)
 
 **Token-Efficient Recursive Serialization Encoding** — a compact, LLM-native alternative to JSON that covers the full JSON data model with **30–55% fewer tokens**.
 
