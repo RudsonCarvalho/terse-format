@@ -1,0 +1,21 @@
+// B.4 — Mixed Types and Edge Cases
+
+// Reserved values as strings must be quoted
+flag: T                   // boolean true
+label: "T"               // string "T"
+value: ~                  // null
+literal: "~"             // string "~"
+
+// Empty collections
+emptyObj: {}
+emptyArr: []
+
+// Heterogeneous array (not a schema array)
+mixed:
+  [
+  1
+  hello
+  T
+  ~
+  {x:1 y:2}
+  ]

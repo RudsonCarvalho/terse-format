@@ -1,0 +1,8 @@
+// B.2 — REST API Response — Uniform Array (Schema Array)
+total: 5
+page: 1
+data:
+  #[id name email role active score]
+  1 "Ana Lima" ana@co.com admin T 98.5
+  2 "Bruno Melo" bruno@co.com editor T 87.2
+  3 "Carla Neves" carla@co.com viewer F 72.0

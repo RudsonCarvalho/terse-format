@@ -1,0 +1,14 @@
+// B.1 — Complete Application Configuration
+name: my-app
+version: 2.1.0
+private: T
+author: {name:Alice email:"alice@co.com"}
+scripts: {dev:vite build:"vite build" test:vitest}
+dependencies: {react:"^18.2.0" zustand:"^4.4.1"}
+config:
+  {
+  port: 3000
+  debug: F
+  logLevel: warn
+  tags: [web typescript spa]
+  }

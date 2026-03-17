@@ -1,0 +1,67 @@
+; TERSE (Token-Efficient Recursive Serialization Encoding)
+; ABNF Grammar — Appendix A of TERSE-Spec-v0.5
+; Conforms to RFC 5234.
+;
+; Revision history:
+;   v0.1 — initial pseudo-ABNF
+;   v0.2 — block-obj unified to { } delimiters; safe-id expanded with
+;           explicit safe-start rule supporting . / @ characters;
+;           primitives isolated as top-level rules
+;   v0.3 — tab indentation explicitly forbidden; number grammar
+;           precedence over safe-id formalized
+;   v0.5 — inline-obj: removed mandatory SP after '{'; WSP removed,
+;           tab-prohibition noted inline; ALPHA explicitly ASCII-only
+
+; ---------------------------------------------------------------
+; Document and Top-Level Structure
+; ---------------------------------------------------------------
+document    = *( comment / key-value )
+key-value   = key ":" [SP / NEWLINE] value NEWLINE
+key         = safe-id / quoted-str
+value       = null / boolean / number / string /
+              object / array / schema-arr
+
+; ---------------------------------------------------------------
+; Primitives (Compact Signaling)
+; ---------------------------------------------------------------
+null        = "~"
+boolean     = "T" / "F"
+number      = ["-"] int [frac] [exp]    ; JSON number grammar
+
+; ---------------------------------------------------------------
+; Strings and Identifiers
+; ---------------------------------------------------------------
+string      = safe-id / quoted-str
+safe-start  = ALPHA / "_" / "." / "/"
+safe-char   = ALPHA / DIGIT / "-" / "_" / "." / "/" / "@"
+safe-id     = safe-start *safe-char
+; safe-id MUST NOT equal "T", "F", or "~"
+; safe-id MUST NOT match the number grammar
+; ALPHA = ASCII A-Z / a-z only (U+0041-U+005A, U+0061-U+007A)
+quoted-str  = DQUOTE *( unescaped / escaped ) DQUOTE
+
+; ---------------------------------------------------------------
+; Objects (Unified with {} delimiters)
+; ---------------------------------------------------------------
+object      = inline-obj / block-obj
+inline-obj  = "{" *( key ":" value SP ) "}"   ; no mandatory SP after {
+block-obj   = "{" NEWLINE 1*( indent key-value ) "}"
+
+; ---------------------------------------------------------------
+; Arrays and Tables
+; ---------------------------------------------------------------
+array       = inline-arr / block-arr
+inline-arr  = "[" *( value SP ) "]"
+block-arr   = "[" NEWLINE 1*( indent value NEWLINE ) "]"
+schema-arr  = "#[" 1*( safe-id SP ) "]" NEWLINE
+              1*( indent 1*( value SP ) NEWLINE )
+
+; ---------------------------------------------------------------
+; Auxiliaries
+; ---------------------------------------------------------------
+indent      = 2SP                   ; mandatory 2-space indentation
+comment     = "//" *( VCHAR / SP ) NEWLINE
+NEWLINE     = %x0A                  ; LF only — CRLF normalized before parse
+SP          = %x20
+
+; Note: WSP (%x09 tab) is explicitly FORBIDDEN for indentation — see §3.2
