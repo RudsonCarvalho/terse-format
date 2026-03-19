@@ -1,16 +1,16 @@
 // C.3 - LLM Tool Call (function calling)
 finish_reason:tool_calls
-message:{content:~ role:assistant}
+message:{content:~ role:assistant }
 model:gpt-4o
 tool_calls:
-  -
-    arguments:{in_stock:T max_price:300 query:"wireless headphones"}
-    function_name:search_products
-    id:call_abc123
-    type:function
-  -
-    arguments:{user_id:user_789}
-    function_name:get_user_cart
-    id:call_def456
-    type:function
-usage:{completion_tokens:87 prompt_tokens:312 total_tokens:399}
+  [
+  arguments:{in_stock:T max_price:300 query:"wireless headphones" }
+  function_name:search_products
+  id:call_abc123
+  type:function
+  arguments:{user_id:user_789 }
+  function_name:get_user_cart
+  id:call_def456
+  type:function
+  ]
+usage:{completion_tokens:87 prompt_tokens:312 total_tokens:399 }
