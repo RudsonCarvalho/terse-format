@@ -1,0 +1,12 @@
+// C.7 - Structured Log Batch (observability / telemetry)
+service: api-gateway
+host: pod-gateway-7d4b9c
+period: {from:"2024-03-15T10:00:00Z" to:"2024-03-15T10:05:00Z"}
+summary: {total:5 errors:1 warnings:1}
+logs:
+  #[ts level trace_id method path status latency_ms user_id]
+  "10:00:01" INFO trace-aaa GET /api/products 200 45 user_123
+  "10:00:03" INFO trace-bbb POST /api/orders 201 112 user_456
+  "10:01:15" WARN trace-ccc GET /api/cart 200 890 user_123
+  "10:02:44" ERROR trace-ddd DELETE /api/orders/99 404 8 user_789
+  "10:04:01" INFO trace-eee GET /api/products 200 38 ~
