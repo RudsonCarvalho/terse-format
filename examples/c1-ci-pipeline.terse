@@ -1,0 +1,22 @@
+// C.1 - CI/CD Pipeline Configuration
+name: build-and-deploy
+on: [push pull_request]
+env:
+  {
+  NODE_VERSION: "20"
+  REGISTRY: ghcr.io
+  IMAGE_NAME: my-app
+  }
+jobs:
+  #[id name runs-on needs]
+  test test ubuntu-latest ~
+  build build ubuntu-latest test
+  deploy deploy ubuntu-latest build
+steps:
+  #[job step uses with]
+  test checkout actions/checkout@v4 ~
+  test setup-node actions/setup-node@v4 {node-version:20}
+  test run-tests ~ ~
+  build docker-build ~ ~
+  build docker-push ~ ~
+  deploy helm-upgrade ~ {chart:my-app namespace:production}
