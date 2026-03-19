@@ -1,5 +1,5 @@
 ; TERSE (Token-Efficient Recursive Serialization Encoding)
-; ABNF Grammar — Appendix A of TERSE-Spec-v0.5
+; ABNF Grammar — Appendix A of TERSE-Spec-v0.7
 ; Conforms to RFC 5234.
 ;
 ; Revision history:
@@ -11,57 +11,106 @@
 ;           precedence over safe-id formalized
 ;   v0.5 — inline-obj: removed mandatory SP after '{'; WSP removed,
 ;           tab-prohibition noted inline; ALPHA explicitly ASCII-only
+;   v0.7 — CRITICAL FIX: SP is now a SEPARATOR between elements,
+;           not a terminator after each element.
+;           Correct:  {a:1 b:hi}   [1 2 3]   #[id name]
+;           Wrong:    {a:1 b:hi }  [1 2 3 ]  #[id name ]
+;           Also: empty object {} and empty array [] given explicit rules.
 
 ; ---------------------------------------------------------------
 ; Document and Top-Level Structure
 ; ---------------------------------------------------------------
-document    = *( comment / key-value )
-key-value   = key ":" [SP / NEWLINE] value NEWLINE
-key         = safe-id / quoted-str
-value       = null / boolean / number / string /
-              object / array / schema-arr
+
+document  = *( comment / key-value )
+key-value = key ":" [SP / NEWLINE] value NEWLINE
+key       = safe-id / quoted-str
+value     = null / boolean / number / string /
+            object / array / schema-arr
 
 ; ---------------------------------------------------------------
 ; Primitives (Compact Signaling)
 ; ---------------------------------------------------------------
-null        = "~"
-boolean     = "T" / "F"
-number      = ["-"] int [frac] [exp]    ; JSON number grammar
+
+null    = "~"
+boolean = "T" / "F"
+number  = ["-"] int [frac] [exp]   ; JSON number grammar (RFC 8259 §6)
+                                    ; number grammar takes precedence
+                                    ; over safe-id — 1e3 is always a
+                                    ; number, never a string
 
 ; ---------------------------------------------------------------
 ; Strings and Identifiers
 ; ---------------------------------------------------------------
-string      = safe-id / quoted-str
-safe-start  = ALPHA / "_" / "." / "/"
-safe-char   = ALPHA / DIGIT / "-" / "_" / "." / "/" / "@"
-safe-id     = safe-start *safe-char
+
+string     = safe-id / quoted-str
+safe-start = ALPHA / "_" / "." / "/"
+safe-char  = ALPHA / DIGIT / "-" / "_" / "." / "/" / "@"
+safe-id    = safe-start *safe-char
 ; safe-id MUST NOT equal "T", "F", or "~"
 ; safe-id MUST NOT match the number grammar
 ; ALPHA = ASCII A-Z / a-z only (U+0041-U+005A, U+0061-U+007A)
-quoted-str  = DQUOTE *( unescaped / escaped ) DQUOTE
+; Unicode letters outside ASCII are NOT safe-id characters
+
+quoted-str = DQUOTE *( unescaped / escaped ) DQUOTE
+unescaped  = %x20-21 / %x23-5B / %x5D-10FFFF
+escaped    = "\" ( %x22 / %x5C / %x2F / %x62 / %x66 /
+                   %x6E / %x72 / %x74 / "u" 4HEXDIG )
 
 ; ---------------------------------------------------------------
 ; Objects (Unified with {} delimiters)
 ; ---------------------------------------------------------------
-object      = inline-obj / block-obj
-inline-obj  = "{" *( key ":" value SP ) "}"   ; no mandatory SP after {
-block-obj   = "{" NEWLINE 1*( indent key-value ) "}"
+
+object     = inline-obj / block-obj
+
+; SP is a SEPARATOR between key-value pairs, not a terminator.
+; An empty inline object is {}.
+inline-obj = "{" key ":" value *( SP key ":" value ) "}"
+inline-obj =/ "{}"
+
+; Block form: { and } each on their own line at parent indent level.
+; Key-value pairs share the same indent level as the braces.
+block-obj  = "{" NEWLINE 1*( indent key-value ) "}"
 
 ; ---------------------------------------------------------------
 ; Arrays and Tables
 ; ---------------------------------------------------------------
-array       = inline-arr / block-arr
-inline-arr  = "[" *( value SP ) "]"
-block-arr   = "[" NEWLINE 1*( indent value NEWLINE ) "]"
-schema-arr  = "#[" 1*( safe-id SP ) "]" NEWLINE
-              1*( indent 1*( value SP ) NEWLINE )
+
+array     = inline-arr / block-arr
+
+; SP is a SEPARATOR between values, not a terminator.
+; An empty inline array is [].
+inline-arr = "[" value *( SP value ) "]"
+inline-arr =/ "[]"
+
+block-arr  = "[" NEWLINE 1*( indent value NEWLINE ) "]"
+
+; Schema array: uniform array of objects sharing the same keys.
+; Fields declared once in header; values listed positionally per row.
+; SP is a SEPARATOR between fields/values, not a terminator.
+; Every row MUST supply exactly N values for N declared fields.
+; Missing/null values MUST use ~ (not omitted position).
+schema-arr = "#[" safe-id *( SP safe-id ) "]" NEWLINE
+             1*( indent value *( SP value ) NEWLINE )
 
 ; ---------------------------------------------------------------
 ; Auxiliaries
 ; ---------------------------------------------------------------
-indent      = 2SP                   ; mandatory 2-space indentation
-comment     = "//" *( VCHAR / SP ) NEWLINE
-NEWLINE     = %x0A                  ; LF only — CRLF normalized before parse
-SP          = %x20
 
-; Note: WSP (%x09 tab) is explicitly FORBIDDEN for indentation — see §3.2
+indent  = 2SP                  ; mandatory 2-space indentation per level
+                               ; tabs are FORBIDDEN — see §3.2
+comment = "//" *( VCHAR / SP ) NEWLINE
+                               ; line comments only; no inline comments
+NEWLINE = %x0A                 ; LF only — CRLF MUST be normalized before parse
+SP      = %x20
+
+; Note: WSP (%x09 tab) is explicitly FORBIDDEN for indentation — §3.2
+; Note: Block indentation MUST be exactly 2 spaces per nesting level.
+;       1 space and 3 spaces are both invalid.
+
+; ---------------------------------------------------------------
+; Number sub-rules (following RFC 8259 §6)
+; ---------------------------------------------------------------
+
+int     = "0" / ( %x31-39 *DIGIT )   ; no leading zeros except 0 itself
+frac    = "." 1*DIGIT
+exp     = ("e" / "E") ["+" / "-"] 1*DIGIT
