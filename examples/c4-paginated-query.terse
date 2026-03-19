@@ -1,17 +1,15 @@
 // C.4 - Paginated Database Query Result
-query: "SELECT * FROM products WHERE category = 'electronics'"
-execution_ms: 12
-pagination:
-  {
-  page: 2
-  per_page: 3
-  total: 147
-  total_pages: 49
-  next: "/api/products?page=3"
-  prev: "/api/products?page=1"
-  }
 data:
-  #[id sku name category price stock rating active]
-  101 EL-NB-001 "Notebook Pro 15" electronics 4599.90 23 4.7 T
-  102 EL-NB-002 "Notebook Air 13" electronics 3199.00 41 4.5 T
-  103 EL-MO-001 "Mechanical Keyboard" electronics 349.90 0 4.8 F
+  #[active category id name price rating sku stock]
+  T electronics 101 "Notebook Pro 15" 4599.9 4.7 EL-NB-001 23
+  T electronics 102 "Notebook Air 13" 3199 4.5 EL-NB-002 41
+  F electronics 103 "Mechanical Keyboard" 349.9 4.8 EL-MO-001 0
+execution_ms:12
+pagination:
+  next:"/api/products?page=3"
+  page:2
+  per_page:3
+  prev:"/api/products?page=1"
+  total:147
+  total_pages:49
+query:"SELECT * FROM products WHERE category = 'electronics'"
