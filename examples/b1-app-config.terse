@@ -1,14 +1,8 @@
-// B.1 — Complete Application Configuration
-name: my-app
-version: 2.1.0
-private: T
-author: {name:Alice email:"alice@co.com"}
-scripts: {dev:vite build:"vite build" test:vitest}
-dependencies: {react:"^18.2.0" zustand:"^4.4.1"}
-config:
-  {
-  port: 3000
-  debug: F
-  logLevel: warn
-  tags: [web typescript spa]
-  }
+// B.1 - Complete Application Configuration
+author:{email:"alice@co.com" name:Alice }
+config:{debug:F logLevel:warn port:3000 tags:[web typescript spa ] }
+dependencies:{react:"^18.2.0" zustand:"^4.4.1" }
+name:my-app
+private:T
+scripts:{build:"vite build" dev:vite test:vitest }
+version:"2.1.0"
