@@ -1,8 +1,7 @@
-// B.2 - REST API Response (Schema Array)
 data:
   #[active email id name role score ]
-  T "ana@co.com" 1 "Ana Lima" admin 98.5 
-  T "bruno@co.com" 2 "Bruno Melo" editor 87.2 
-  F "carla@co.com" 3 "Carla Neves" viewer 72 
+  T ana@co.com 1 "Ana Lima" admin 98.5 
+  T bruno@co.com 2 "Bruno Melo" editor 87.2 
+  F carla@co.com 3 "Carla Neves" viewer 72 
 page:1
 total:5

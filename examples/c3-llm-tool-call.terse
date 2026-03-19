@@ -1,4 +1,3 @@
-// C.3 - LLM Tool Call (function calling)
 finish_reason:tool_calls
 message:{content:~ role:assistant }
 model:gpt-4o

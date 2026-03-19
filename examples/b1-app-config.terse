@@ -1,5 +1,4 @@
-// B.1 - Complete Application Configuration
-author:{email:"alice@co.com" name:Alice }
+author:{email:alice@co.com name:Alice }
 config:{debug:F logLevel:warn port:3000 tags:[web typescript spa ] }
 dependencies:{react:"^18.2.0" zustand:"^4.4.1" }
 name:my-app

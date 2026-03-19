@@ -1,4 +1,3 @@
-// C.8 - Feature Flags and Remote Config
 app:my-app
 env:production
 fetched_at:"2024-03-15T10:00:00Z"

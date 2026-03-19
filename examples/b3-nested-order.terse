@@ -1,5 +1,4 @@
-// B.3 - Deeply Nested Order
-customer:{email:"r@email.com" id:1042 name:"Rafael Torres" }
+customer:{email:r@email.com id:1042 name:"Rafael Torres" }
 items:
   #[name qty sku unitPrice ]
   "Notebook Pro 15" 1 PRD-001 4599.9 
@@ -7,8 +6,10 @@ items:
 orderId:ORD-88421
 payment:{installments:12 method:credit_card total:4924.7 }
 shipping:
+  {
   address:"Rua das Flores, 123"
   city:"São Paulo"
   estimatedDays:2
   method:express
+  }
 status:confirmed

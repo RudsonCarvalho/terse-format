@@ -113,6 +113,14 @@ TERSE is optimized for the intersection of two constraints: token efficiency and
 | [examples/b2-rest-api-response.terse](examples/b2-rest-api-response.terse) | REST API response with schema array |
 | [examples/b3-nested-order.terse](examples/b3-nested-order.terse) | Deeply nested e-commerce order |
 | [examples/b4-mixed-types.terse](examples/b4-mixed-types.terse) | Mixed types and edge cases |
+| [examples/c1-ci-pipeline.terse](examples/c1-ci-pipeline.terse) | CI/CD pipeline configuration |
+| [examples/c2-auth-token.terse](examples/c2-auth-token.terse) | OAuth2 authentication token response |
+| [examples/c3-llm-tool-call.terse](examples/c3-llm-tool-call.terse) | LLM tool-call payload with nested arrays |
+| [examples/c4-paginated-query.terse](examples/c4-paginated-query.terse) | Paginated API query result |
+| [examples/c5-event-message.terse](examples/c5-event-message.terse) | Event-driven message envelope |
+| [examples/c6-openapi-schema.terse](examples/c6-openapi-schema.terse) | OpenAPI 3.1 schema fragment |
+| [examples/c7-structured-logs.terse](examples/c7-structured-logs.terse) | Structured log entries |
+| [examples/c8-feature-flags.terse](examples/c8-feature-flags.terse) | Feature flag configuration |
 
 ## Status
 
