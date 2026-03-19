@@ -1,0 +1,15 @@
+// C.2 - Authentication Token Response (OAuth2 / JWT)
+access_token: eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyXzEyMyIsInJvbGVzIjpbImFkbWluIiwiZWRpdG9yIl0sImV4cCI6MTcwOTI1NjAwMH0.signature
+token_type: Bearer
+expires_in: 3600
+refresh_token: dGhpc2lzYXJlZnJlc2h0b2tlbg
+scope: [read write admin]
+user:
+  {
+  id: user_123
+  name: "Alice Ferreira"
+  email: "alice@company.com"
+  roles: [admin editor]
+  mfa_enabled: T
+  last_login: "2024-03-01T14:22:00Z"
+  }
