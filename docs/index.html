@@ -268,6 +268,7 @@
         <option value="userlist">User list (schema array)</option>
         <option value="order">Nested order</option>
         <option value="mixed">Mixed types</option>
+        <option value="deploy">Deep nesting (deploy config)</option>
       </select>
       <button id="pg-btn" class="btn btn-secondary">← Parse TERSE back to JSON</button>
       <span id="pg-status" style="font-family:var(--mono);font-size:.82rem"></span>
@@ -894,6 +895,48 @@ const EXAMPLES = {
     bare_str:"hello",quoted_str:"hello world",special:"T",
     nested:{a:{b:{c:"deep"}}},
     matrix:[[1,2,3],[4,5,6]]
+  },
+  deploy: {
+    service:"payments-api",version:"3.2.0",
+    build:{
+      runtime:"node18",
+      steps:[
+        {name:"install",run:"npm ci"},
+        {name:"test",run:"npm test",timeout:120},
+        {name:"bundle",run:"npm run build"}
+      ],
+      cache:{enabled:true,paths:["node_modules",".npm"]}
+    },
+    deploy:{
+      strategy:"rolling",
+      environments:{
+        staging:{
+          replicas:1,
+          config:{
+            db_host:"db.staging.internal",
+            log_level:"debug",
+            feature_flags:{new_checkout:true,beta_api:false}
+          }
+        },
+        production:{
+          replicas:3,
+          config:{
+            db_host:"db.prod.internal",
+            log_level:"warn",
+            feature_flags:{new_checkout:true,beta_api:false}
+          }
+        }
+      }
+    },
+    monitoring:{
+      enabled:true,
+      alerts:[
+        {name:"high-error-rate",severity:"critical",
+         condition:{metric:"error_rate",op:"gt",threshold:0.05}},
+        {name:"slow-response",severity:"warning",
+         condition:{metric:"p99_latency_ms",op:"gt",threshold:500}}
+      ]
+    }
   }
 };
 
