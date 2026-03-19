@@ -150,7 +150,7 @@
       <div class="stat"><div class="value">30&ndash;55%</div><div class="label">fewer tokens vs JSON</div></div>
       <div class="stat"><div class="value">100%</div><div class="label">JSON data model coverage</div></div>
       <div class="stat"><div class="value">5</div><div class="label">design principles</div></div>
-      <div class="stat"><div class="value">3</div><div class="label">reference implementations</div></div>
+      <div class="stat"><div class="value">4</div><div class="label">reference implementations</div></div>
     </div>
   </div>
 </section>
@@ -423,6 +423,21 @@ parse<span class="p">(</span><span class="s">"{name:Alice age:30}"</span><span c
         </div>
       </div>
       <div class="icard">
+        <div class="lang">Go</div>
+        <h3>terse-go</h3>
+        <pre><span class="cm">// go get github.com/RudsonCarvalho/terse-go</span>
+<span class="cm">// Zero external dependencies — Go 1.21+</span></pre>
+        <pre>terse<span class="p">.</span>Serialize<span class="p">(</span>map<span class="p">[</span>string<span class="p">]</span>any<span class="p">{</span><span class="s">"a"</span><span class="p">:</span> <span class="n">1</span><span class="p">,</span> <span class="s">"b"</span><span class="p">:</span> <span class="b">true</span><span class="p">})</span>
+<span class="cm">// "{a:1 b:T}"</span>
+
+terse<span class="p">.</span>Parse<span class="p">(</span><span class="s">"{name:Alice age:30}"</span><span class="p">)</span>
+<span class="cm">// map["name":"Alice" "age":30]</span></pre>
+        <div class="clinks">
+          <a href="https://github.com/RudsonCarvalho/terse-go">GitHub</a>
+          <a href="https://github.com/RudsonCarvalho/terse-go/actions"><img src="https://github.com/RudsonCarvalho/terse-go/actions/workflows/ci.yml/badge.svg" alt="CI" style="vertical-align:middle;height:18px" /></a>
+        </div>
+      </div>
+      <div class="icard">
         <div class="lang">Java</div>
         <h3>terse-java</h3>
         <pre><span class="cm">// Maven (pom.xml) or Gradle (build.gradle)</span>
@@ -457,7 +472,7 @@ Terse<span class="p">.</span>parse<span class="p">(</span><span class="s">"{name
 <footer>
   <div class="container">
     <p><strong>TERSE</strong> &middot; Draft v0.6 &middot; <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> &middot; <a href="https://github.com/RudsonCarvalho/terse-format">github.com/RudsonCarvalho/terse-format</a></p>
-    <p style="margin-top:8px" class="ghost">Implementations: MIT &middot; <a href="https://github.com/RudsonCarvalho/terse-js">terse-js</a> &middot; <a href="https://github.com/RudsonCarvalho/terse-py">terse-py</a> &middot; <a href="https://github.com/RudsonCarvalho/terse-java">terse-java</a></p>
+    <p style="margin-top:8px" class="ghost">Implementations: MIT &middot; <a href="https://github.com/RudsonCarvalho/terse-js">terse-js</a> &middot; <a href="https://github.com/RudsonCarvalho/terse-py">terse-py</a> &middot; <a href="https://github.com/RudsonCarvalho/terse-go">terse-go</a> &middot; <a href="https://github.com/RudsonCarvalho/terse-java">terse-java</a></p>
   </div>
 </footer>
 

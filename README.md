@@ -94,6 +94,7 @@ TERSE is optimized for the intersection of two constraints: token efficiency and
 |---|---|---|
 | TypeScript / JavaScript | [terse-js](https://github.com/RudsonCarvalho/terse-js) | [![CI](https://github.com/RudsonCarvalho/terse-js/actions/workflows/ci.yml/badge.svg)](https://github.com/RudsonCarvalho/terse-js/actions/workflows/ci.yml) |
 | Python | [terse-py](https://github.com/RudsonCarvalho/terse-py) | [![CI](https://github.com/RudsonCarvalho/terse-py/actions/workflows/ci.yml/badge.svg)](https://github.com/RudsonCarvalho/terse-py/actions/workflows/ci.yml) |
+| Go | [terse-go](https://github.com/RudsonCarvalho/terse-go) | [![CI](https://github.com/RudsonCarvalho/terse-go/actions/workflows/ci.yml/badge.svg)](https://github.com/RudsonCarvalho/terse-go/actions/workflows/ci.yml) |
 | Java | [terse-java](https://github.com/RudsonCarvalho/terse-java) | [![CI](https://github.com/RudsonCarvalho/terse-java/actions/workflows/ci.yml/badge.svg)](https://github.com/RudsonCarvalho/terse-java/actions/workflows/ci.yml) |
 
 ## Specification
