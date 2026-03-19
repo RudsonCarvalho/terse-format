@@ -118,6 +118,26 @@
     footer a{color:var(--muted)}
     footer a:hover{color:var(--text)}
     .ghost{color:#484f58}
+
+    /* ── Playground ───────────────────────────── */
+    .pg-toolbar{display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap}
+    #pg-example{background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:8px 14px;font-size:.88rem;cursor:pointer;font-family:var(--sans)}
+    #pg-example:focus{outline:1px solid var(--accent)}
+    .pg-panels{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    @media(max-width:640px){.pg-panels{grid-template-columns:1fr}}
+    .pg-panel{display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden;transition:border-color .15s}
+    .pg-panel.has-error{border-color:var(--red)}
+    .pg-panel.has-warn{border-color:var(--yellow)}
+    .pg-hdr{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-bottom:1px solid var(--border)}
+    .pg-lbl{font-family:var(--mono);font-size:.78rem;color:var(--muted);font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+    .pg-tok{font-family:var(--mono);font-size:.75rem;padding:2px 8px;border-radius:4px;background:rgba(139,148,158,.12);color:var(--muted)}
+    .pg-tok.better{background:rgba(63,185,80,.15);color:var(--green);font-weight:700}
+    #pg-json,#pg-terse{font-family:var(--mono);font-size:.82rem;line-height:1.65;background:var(--bg);color:var(--text);border:none;resize:none;padding:16px;height:300px;outline:none;width:100%;tab-size:2}
+    #pg-terse{color:#c9d1d9}
+    #pg-msg{margin-top:10px;font-size:.85rem;min-height:1.5em;font-family:var(--mono)}
+    .msg-ok{color:var(--green)}
+    .msg-warn{color:var(--yellow)}
+    .msg-err{color:var(--red)}
   </style>
 </head>
 <body>
@@ -126,6 +146,7 @@
   <div class="inner">
     <span class="logo">TER<span>SE</span></span>
     <div class="nav-links">
+      <a href="#playground">Playground</a>
       <a href="#compare">Examples</a>
       <a href="#savings">Savings</a>
       <a href="#why">Why TERSE</a>
@@ -232,6 +253,43 @@
   <span class="n">5</span> <span class="s">"Elena Costa"</span> viewer <span class="b">F</span></pre>
       </div>
     </div>
+  </div>
+</section>
+
+<section id="playground">
+  <div class="container">
+    <h2>Playground</h2>
+    <p class="sub">Paste any JSON — TERSE updates in real time. Hit the button to verify round-trip.</p>
+
+    <div class="pg-toolbar">
+      <select id="pg-example">
+        <option value="">— Load example —</option>
+        <option value="appconfig">App config</option>
+        <option value="userlist">User list (schema array)</option>
+        <option value="order">Nested order</option>
+        <option value="mixed">Mixed types</option>
+      </select>
+      <button id="pg-btn" class="btn btn-secondary">← Parse TERSE → JSON</button>
+      <span id="pg-status" style="font-family:var(--mono);font-size:.82rem"></span>
+    </div>
+
+    <div class="pg-panels">
+      <div class="pg-panel" id="pg-left">
+        <div class="pg-hdr">
+          <span class="pg-lbl">JSON input</span>
+          <span class="pg-tok" id="json-tok">—</span>
+        </div>
+        <textarea id="pg-json" spellcheck="false" autocomplete="off" placeholder='{ "key": "value" }'></textarea>
+      </div>
+      <div class="pg-panel" id="pg-right">
+        <div class="pg-hdr">
+          <span class="pg-lbl">TERSE output</span>
+          <span class="pg-tok" id="terse-tok">—</span>
+        </div>
+        <textarea id="pg-terse" spellcheck="false" autocomplete="off" readonly placeholder="TERSE will appear here…"></textarea>
+      </div>
+    </div>
+    <div id="pg-msg"></div>
   </div>
 </section>
 
@@ -476,5 +534,477 @@ Terse<span class="p">.</span>parse<span class="p">(</span><span class="s">"{name
   </div>
 </footer>
 
+<script>
+// ═══════════════════════════════════════════════════════════════
+//  TERSE — inline serializer (JSON value → TERSE string)
+// ═══════════════════════════════════════════════════════════════
+const _RSV = new Set(['T','F','~']);
+const _SAFE_RE  = /^[A-Za-z_./][A-Za-z0-9\-_./@]*$/;
+const _NUM_RE   = /^-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+\-]?\d+)?$/;
+const LINE_LIM  = 80;
+
+function isSafe(s){
+  if(!s||_RSV.has(s)) return false;
+  if(!_SAFE_RE.test(s)) return false;
+  if(_NUM_RE.test(s)) return false;
+  return true;
+}
+function tStr(s){
+  if(isSafe(s)) return s;
+  return '"'+s.replace(/\\/g,'\\\\').replace(/"/g,'\\"')
+              .replace(/\n/g,'\\n').replace(/\r/g,'\\r')
+              .replace(/\t/g,'\\t')+'"';
+}
+function tKey(k){ return isSafe(k)?k:tStr(k); }
+
+function tInlineVal(v,d){
+  if(d>8) return null;
+  if(v===null) return '~';
+  if(typeof v==='boolean') return v?'T':'F';
+  if(typeof v==='number') return String(v);
+  if(typeof v==='string') return tStr(v);
+  if(Array.isArray(v)){
+    if(!v.length) return '[]';
+    const p=v.map(x=>tInlineVal(x,d+1));
+    if(p.some(x=>x===null)) return null;
+    return '['+p.join(' ')+']';
+  }
+  if(typeof v==='object'){
+    const e=Object.entries(v);
+    if(!e.length) return '{}';
+    const p=e.map(([k,x])=>{const xv=tInlineVal(x,d+1);return xv===null?null:tKey(k)+':'+xv;});
+    if(p.some(x=>x===null)) return null;
+    return '{'+p.join(' ')+'}';
+  }
+  return null;
+}
+
+function schemaKeys(a){
+  if(a.length<2) return null;
+  for(const x of a) if(!x||typeof x!=='object'||Array.isArray(x)) return null;
+  const ks=Object.keys(a[0]);
+  if(!ks.length) return null;
+  for(const x of a){
+    const xk=Object.keys(x);
+    if(xk.length!==ks.length||!xk.every((k,i)=>k===ks[i])) return null;
+    for(const v of Object.values(x)) if(v&&typeof v==='object') return null;
+  }
+  return ks;
+}
+
+function tVal(v,d){
+  d=d||0;
+  if(v===null) return '~';
+  if(typeof v==='boolean') return v?'T':'F';
+  if(typeof v==='number') return String(v);
+  if(typeof v==='string') return tStr(v);
+  if(Array.isArray(v)){
+    if(!v.length) return '[]';
+    const ks=schemaKeys(v);
+    if(ks){
+      const hdr='#['+ks.map(tKey).join(' ')+']';
+      const rows=v.map(r=>'  '+ks.map(k=>tVal(r[k],d+1)).join(' '));
+      return hdr+'\n'+rows.join('\n');
+    }
+    const inl=tInlineVal(v,d);
+    if(inl&&inl.length<=LINE_LIM) return inl;
+    return '[\n'+v.map(x=>'  '+tVal(x,d+1)).join('\n')+'\n]';
+  }
+  if(typeof v==='object'){
+    const e=Object.entries(v);
+    if(!e.length) return '{}';
+    const inl=tInlineVal(v,d);
+    if(inl&&inl.length<=LINE_LIM) return inl;
+    const lines=e.map(([k,x])=>{
+      const val=tVal(x,d+1);
+      if(val.includes('\n')) return tKey(k)+':\n'+val.split('\n').filter(Boolean).map(l=>'  '+l).join('\n');
+      return tKey(k)+':'+val;
+    });
+    return '{\n'+lines.join('\n')+'\n}';
+  }
+  return '~';
+}
+
+function tDoc(o){
+  const lines=[];
+  for(const [k,v] of Object.entries(o)){
+    const val=tVal(v,1);
+    if(val.includes('\n')){
+      lines.push(tKey(k)+':');
+      // Schema-array: header gets +2 indent; rows already carry their own 2-space
+      // indent (absolute per spec), so don't double-indent them.
+      if(val.startsWith('#[')){
+        const pts=val.split('\n');
+        lines.push('  '+pts[0]); // indent header
+        for(let i=1;i<pts.length;i++) if(pts[i]) lines.push(pts[i]); // rows as-is
+      } else {
+        val.split('\n').filter(Boolean).forEach(l=>lines.push('  '+l));
+      }
+    } else {
+      lines.push(tKey(k)+':'+val);
+    }
+  }
+  return lines.join('\n')+'\n';
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  TERSE — inline parser (TERSE string → JS value)
+// ═══════════════════════════════════════════════════════════════
+const _SC=/[A-Za-z0-9\-_./@]/;
+const _SS=/[A-Za-z_./]/;
+
+function mkP(src){
+  return {src:src.replace(/\r\n/g,'\n').replace(/\r/g,'\n'),pos:0};
+}
+function pEof(p){return p.pos>=p.src.length;}
+function pCh(p){return p.src[p.pos];}
+function pSkipHws(p){while(!pEof(p)&&pCh(p)===' ')p.pos++;}
+function pSkipLine(p){while(!pEof(p)&&pCh(p)!=='\n')p.pos++;}
+function pSkipBlanks(p){
+  while(!pEof(p)){
+    if(pCh(p)==='\n'){p.pos++;continue;}
+    if(pCh(p)==='/'){
+      if(p.pos+1<p.src.length&&p.src[p.pos+1]==='/'){pSkipLine(p);continue;}
+      break;
+    }
+    // blank line (only spaces before \n)
+    if(pCh(p)===' '){
+      let i=p.pos;while(i<p.src.length&&p.src[i]===' ')i++;
+      if(i>=p.src.length||p.src[i]==='\n'){p.pos=i;continue;}
+    }
+    break;
+  }
+}
+
+function pKey(p){
+  if(pCh(p)==='"') return pQStr(p);
+  const s=p.pos;
+  while(!pEof(p)&&_SC.test(pCh(p)))p.pos++;
+  if(p.pos===s) throw new Error('Expected key at pos '+p.pos+' (got '+JSON.stringify(pCh(p))+')');
+  return p.src.slice(s,p.pos);
+}
+
+function pNum(p){
+  const s=p.pos;
+  if(pCh(p)==='-')p.pos++;
+  while(!pEof(p)&&/[0-9]/.test(pCh(p)))p.pos++;
+  if(!pEof(p)&&pCh(p)==='.'){p.pos++;while(!pEof(p)&&/[0-9]/.test(pCh(p)))p.pos++;}
+  if(!pEof(p)&&/[eE]/.test(pCh(p))){
+    p.pos++;if(!pEof(p)&&/[+\-]/.test(pCh(p)))p.pos++;
+    while(!pEof(p)&&/[0-9]/.test(pCh(p)))p.pos++;
+  }
+  return Number(p.src.slice(s,p.pos));
+}
+
+function pQStr(p){
+  p.pos++;let s='';
+  while(!pEof(p)&&pCh(p)!=='"'){
+    if(pCh(p)==='\\'){
+      p.pos++;const e=pCh(p);p.pos++;
+      if(e==='"')s+='"';else if(e==='\\')s+='\\';else if(e==='n')s+='\n';
+      else if(e==='r')s+='\r';else if(e==='t')s+='\t';else if(e==='b')s+='\b';
+      else if(e==='f')s+='\f';
+      else if(e==='u'){s+=String.fromCharCode(parseInt(p.src.slice(p.pos,p.pos+4),16));p.pos+=4;}
+      else s+=e;
+    } else {s+=pCh(p);p.pos++;}
+  }
+  if(!pEof(p))p.pos++;
+  return s;
+}
+
+function pBare(p){
+  const s=p.pos;
+  while(!pEof(p)&&_SC.test(pCh(p)))p.pos++;
+  const v=p.src.slice(s,p.pos);
+  if(v==='T')return true;if(v==='F')return false;if(v==='~')return null;
+  return v;
+}
+
+function pVal(p){
+  if(pEof(p)) throw new Error('Unexpected end of input');
+  const c=pCh(p);
+  if(c==='~'){p.pos++;return null;}
+  if(c==='T'){const nx=p.src[p.pos+1];if(!nx||!_SC.test(nx)){p.pos++;return true;}}
+  if(c==='F'){const nx=p.src[p.pos+1];if(!nx||!_SC.test(nx)){p.pos++;return false;}}
+  if(c==='"') return pQStr(p);
+  if(c==='[') return pArr(p);
+  if(c==='{') return pObj(p);
+  if(c==='#'&&p.src[p.pos+1]==='[') return pSchema(p);
+  if(/[0-9]/.test(c)||(c==='-'&&/[0-9]/.test(p.src[p.pos+1]||''))) return pNum(p);
+  if(_SS.test(c)) return pBare(p);
+  throw new Error('Unexpected char '+JSON.stringify(c)+' at pos '+p.pos);
+}
+
+function pArr(p){
+  p.pos++;pSkipHws(p);
+  if(!pEof(p)&&pCh(p)===']'){p.pos++;return[];}
+  if(!pEof(p)&&pCh(p)==='\n'){
+    // block array
+    const arr=[];
+    while(!pEof(p)){
+      const lp=p.pos;
+      while(!pEof(p)&&pCh(p)==='\n')p.pos++;
+      if(pEof(p))break;
+      const is=p.pos;while(!pEof(p)&&pCh(p)===' ')p.pos++;
+      const ind=p.pos-is;
+      if(ind<2){p.pos=lp;break;}
+      if(pEof(p)||pCh(p)==='\n')continue;
+      if(pCh(p)==='/'&&p.src[p.pos+1]==='/'){{pSkipLine(p);continue;}}
+      if(pCh(p)===']'){p.pos++;return arr;}
+      arr.push(pVal(p));pSkipLine(p);
+    }
+    pSkipHws(p);if(!pEof(p)&&pCh(p)===']')p.pos++;
+    return arr;
+  }
+  const arr=[];
+  while(!pEof(p)&&pCh(p)!==']'&&pCh(p)!=='\n'){
+    pSkipHws(p);if(pCh(p)===']')break;
+    arr.push(pVal(p));pSkipHws(p);
+  }
+  if(!pEof(p)&&pCh(p)===']')p.pos++;
+  return arr;
+}
+
+function pObj(p){
+  p.pos++;pSkipHws(p);
+  if(!pEof(p)&&pCh(p)==='}'){p.pos++;return{};}
+  if(!pEof(p)&&pCh(p)==='\n'){
+    const obj={};
+    while(!pEof(p)){
+      const lp=p.pos;
+      while(!pEof(p)&&pCh(p)==='\n')p.pos++;
+      if(pEof(p))break;
+      const is=p.pos;while(!pEof(p)&&pCh(p)===' ')p.pos++;
+      const ind=p.pos-is;
+      if(ind<2){p.pos=lp;break;}
+      if(pEof(p)||pCh(p)==='\n')continue;
+      if(pCh(p)==='/'&&p.src[p.pos+1]==='/'){{pSkipLine(p);continue;}}
+      if(pCh(p)==='}'){p.pos++;return obj;}
+      const k=pKey(p);pSkipHws(p);
+      if(pEof(p)||pCh(p)!==':')throw new Error('Expected ":" in block object');
+      p.pos++;pSkipHws(p);
+      if(!pEof(p)&&pCh(p)==='\n'){p.pos++;obj[k]=pBlockVal(p);}
+      else{obj[k]=pVal(p);if(!pEof(p)&&pCh(p)==='\n')p.pos++;}
+    }
+    // consume closing }
+    while(!pEof(p)&&pCh(p)==='\n')p.pos++;
+    while(!pEof(p)&&pCh(p)===' ')p.pos++;
+    if(!pEof(p)&&pCh(p)==='}')p.pos++;
+    return obj;
+  }
+  const obj={};
+  while(!pEof(p)&&pCh(p)!=='}'&&pCh(p)!=='\n'){
+    pSkipHws(p);if(pCh(p)==='}')break;
+    const k=pKey(p);pSkipHws(p);
+    if(pEof(p)||pCh(p)!==':')throw new Error('Expected ":" in inline object after key "'+k+'"');
+    p.pos++;obj[k]=pVal(p);pSkipHws(p);
+  }
+  if(!pEof(p)&&pCh(p)==='}')p.pos++;
+  return obj;
+}
+
+function pBlockVal(p){
+  pSkipHws(p);
+  if(pEof(p))return null;
+  const c=pCh(p);
+  if(c==='{'||c==='['||(c==='#'&&p.src[p.pos+1]==='[')) return pVal(p);
+  const v=pVal(p);if(!pEof(p)&&pCh(p)==='\n')p.pos++;
+  return v;
+}
+
+function pSchema(p){
+  p.pos+=2;
+  const keys=[];
+  while(!pEof(p)&&pCh(p)!==']'&&pCh(p)!=='\n'){
+    pSkipHws(p);if(pCh(p)===']')break;
+    keys.push(pKey(p));pSkipHws(p);
+  }
+  if(!pEof(p)&&pCh(p)===']')p.pos++;
+  const arr=[];
+  while(!pEof(p)){
+    let i=p.pos;
+    while(i<p.src.length&&p.src[i]==='\n')i++;
+    if(i>=p.src.length)break;
+    let sp=0;while(i+sp<p.src.length&&p.src[i+sp]===' ')sp++;
+    if(sp<2)break;
+    const rest=p.src.slice(i+sp);
+    if(/^([A-Za-z_./][A-Za-z0-9\-_./@]*|"[^"]*")\s*:/.test(rest))break;
+    p.pos=i+sp;
+    if(pEof(p)||pCh(p)==='\n')continue;
+    if(pCh(p)==='/'&&p.src[p.pos+1]==='/'){{pSkipLine(p);continue;}}
+    const row={};
+    for(const k of keys){pSkipHws(p);row[k]=pVal(p);}
+    pSkipLine(p);if(!pEof(p))p.pos++;
+    arr.push(row);
+  }
+  return arr;
+}
+
+function parseTerseDoc(src){
+  src=src.replace(/\r\n/g,'\n').replace(/\r/g,'\n').trimEnd();
+  const p=mkP(src);
+  const obj={};
+  pSkipBlanks(p);
+  while(!pEof(p)){
+    pSkipHws(p);
+    if(pEof(p))break;
+    if(pCh(p)==='\n'){p.pos++;pSkipBlanks(p);continue;}
+    if(pCh(p)==='/'&&p.src[p.pos+1]==='/'){{pSkipLine(p);continue;}}
+    const k=pKey(p);pSkipHws(p);
+    if(pEof(p)||pCh(p)!==':')throw new Error('Expected ":" after key "'+k+'"');
+    p.pos++;pSkipHws(p);
+    if(!pEof(p)&&pCh(p)==='\n'){p.pos++;obj[k]=pBlockVal(p);}
+    else{obj[k]=pVal(p);if(!pEof(p)&&pCh(p)==='\n')p.pos++;}
+    pSkipBlanks(p);
+  }
+  return obj;
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  Playground UI
+// ═══════════════════════════════════════════════════════════════
+const EXAMPLES = {
+  appconfig: {
+    name:"my-app",version:"2.1.0",private:true,port:3000,debug:false,
+    tags:["web","typescript","spa"],
+    author:{name:"Alice",email:"alice@co.com"}
+  },
+  userlist: {
+    users:[
+      {id:1,name:"Ana Lima",role:"admin",active:true},
+      {id:2,name:"Bruno Melo",role:"editor",active:true},
+      {id:3,name:"Carla Neves",role:"viewer",active:false},
+      {id:4,name:"Diego Alves",role:"editor",active:true},
+      {id:5,name:"Elena Costa",role:"viewer",active:false}
+    ]
+  },
+  order: {
+    id:"ord-7812",status:"processing",
+    customer:{name:"João Silva",email:"joao@example.com",vip:true},
+    items:[
+      {sku:"WDG-001",qty:2,unit_price:29.99},
+      {sku:"GDT-042",qty:1,unit_price:149.0}
+    ],
+    shipping:{method:"express",days:2,address:"Rua das Flores 42, São Paulo"},
+    totals:{subtotal:208.98,tax:37.62,total:246.6}
+  },
+  mixed: {
+    nullval:null,yes:true,no:false,integer:42,float:3.14,
+    sci:1.5e10,negnum:-7,
+    bare_str:"hello",quoted_str:"hello world",special:"T",
+    nested:{a:{b:{c:"deep"}}},
+    matrix:[[1,2,3],[4,5,6]]
+  }
+};
+
+function estimateTokens(s){
+  if(!s||!s.trim()) return null;
+  return Math.round(s.length/3.8);
+}
+
+function setMsg(text,cls){
+  const el=document.getElementById('pg-msg');
+  el.textContent=text;el.className='pg-msg '+cls;
+}
+
+function updateTok(id,tok,ref){
+  const el=document.getElementById(id);
+  el.textContent=tok===null?'—':tok+' tokens';
+  el.className='pg-tok';
+  if(ref!==undefined&&tok!==null&&ref!==null&&tok<ref){
+    el.className='pg-tok better';
+    el.textContent=tok+' tokens (−'+Math.round((1-tok/ref)*100)+'%)';
+  }
+}
+
+function convert(){
+  const jsonEl=document.getElementById('pg-json');
+  const terseEl=document.getElementById('pg-terse');
+  const leftPanel=document.getElementById('pg-left');
+  const rightPanel=document.getElementById('pg-right');
+  const raw=jsonEl.value;
+
+  if(!raw.trim()){
+    terseEl.value='';
+    updateTok('json-tok',null);updateTok('terse-tok',null);
+    setMsg('','');leftPanel.className='pg-panel';rightPanel.className='pg-panel';
+    return;
+  }
+
+  let parsed;
+  try{ parsed=JSON.parse(raw); } catch(e){
+    leftPanel.className='pg-panel has-error';rightPanel.className='pg-panel';
+    terseEl.value='';
+    updateTok('json-tok',null);updateTok('terse-tok',null);
+    setMsg('✗ Invalid JSON: '+e.message,'msg-err');
+    return;
+  }
+
+  leftPanel.className='pg-panel';
+  let terse;
+  try{
+    terse = (parsed&&typeof parsed==='object'&&!Array.isArray(parsed))
+      ? tDoc(parsed) : tVal(parsed)+'\n';
+  } catch(e){
+    setMsg('✗ Serializer error: '+e.message,'msg-err');return;
+  }
+
+  terseEl.value=terse;
+  const jTok=estimateTokens(raw);
+  const tTok=estimateTokens(terse);
+  updateTok('json-tok',jTok);
+  updateTok('terse-tok',tTok,jTok);
+
+  // live round-trip check
+  try{
+    const rt=(parsed&&typeof parsed==='object'&&!Array.isArray(parsed))
+      ? parseTerseDoc(terse) : (() => { const p=mkP(terse.trim()); return pVal(p); })();
+    const a=JSON.stringify(parsed),b=JSON.stringify(rt);
+    if(a===b){
+      rightPanel.className='pg-panel';
+      setMsg('✓ Round-trip perfect','msg-ok');
+    } else {
+      rightPanel.className='pg-panel has-warn';
+      setMsg('⚠ Round-trip mismatch — see console for details','msg-warn');
+      console.warn('TERSE round-trip mismatch\nOriginal:',a,'\nAfter RT:',b);
+    }
+  } catch(e){
+    rightPanel.className='pg-panel has-warn';
+    setMsg('⚠ Parse-back error: '+e.message,'msg-warn');
+  }
+}
+
+function roundTrip(){
+  const terseEl=document.getElementById('pg-terse');
+  const jsonEl=document.getElementById('pg-json');
+  const src=terseEl.value;
+  if(!src.trim()){ setMsg('Nothing to parse back','msg-warn'); return; }
+  try{
+    const rt=parseTerseDoc(src);
+    const pretty=JSON.stringify(rt,null,2);
+    jsonEl.value=pretty;
+    setMsg('✓ Parsed back to JSON — round-trip complete','msg-ok');
+    convert(); // re-serialize so counts are fresh
+  } catch(e){
+    setMsg('✗ Parse error: '+e.message,'msg-err');
+  }
+}
+
+document.getElementById('pg-json').addEventListener('input', convert);
+document.getElementById('pg-btn').addEventListener('click', roundTrip);
+document.getElementById('pg-example').addEventListener('change', function(){
+  const ex=EXAMPLES[this.value];
+  if(!ex) return;
+  document.getElementById('pg-json').value=JSON.stringify(ex,null,2);
+  convert();
+  this.value='';
+});
+
+// Load default example on page load
+document.addEventListener('DOMContentLoaded',function(){
+  document.getElementById('pg-json').value=JSON.stringify(EXAMPLES.appconfig,null,2);
+  convert();
+});
+</script>
 </body>
 </html>
