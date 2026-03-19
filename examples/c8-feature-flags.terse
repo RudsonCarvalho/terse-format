@@ -1,0 +1,15 @@
+// C.8 - Feature Flags and Remote Config
+app: my-app
+env: production
+fetched_at: "2024-03-15T10:00:00Z"
+flags:
+  #[key enabled rollout_pct description]
+  new_checkout T 100 "Redesigned checkout flow"
+  ai_suggestions T 25 "AI product recommendations"
+  dark_mode T 80 "Dark mode UI"
+  beta_dashboard F 0 "New analytics dashboard"
+  legacy_importer F 0 "CSV import (deprecated)"
+overrides:
+  #[user_id flag value]
+  user_123 beta_dashboard T
+  user_456 ai_suggestions F
