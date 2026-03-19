@@ -1,9 +1,9 @@
 // C.4 - Paginated Database Query Result
 data:
-  #[active category id name price rating sku stock]
-  T electronics 101 "Notebook Pro 15" 4599.9 4.7 EL-NB-001 23
-  T electronics 102 "Notebook Air 13" 3199 4.5 EL-NB-002 41
-  F electronics 103 "Mechanical Keyboard" 349.9 4.8 EL-MO-001 0
+  #[active category id name price rating sku stock ]
+  T electronics 101 "Notebook Pro 15" 4599.9 4.7 EL-NB-001 23 
+  T electronics 102 "Notebook Air 13" 3199 4.5 EL-NB-002 41 
+  F electronics 103 "Mechanical Keyboard" 349.9 4.8 EL-MO-001 0 
 execution_ms:12
 pagination:
   next:"/api/products?page=3"
