@@ -2,7 +2,7 @@
 access_token:eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyXzEyMyIsInJvbGVzIjpbImFkbWluIiwiZWRpdG9yIl0sImV4cCI6MTcwOTI1NjAwMH0.signature
 expires_in:3600
 refresh_token:dGhpc2lzYXJlZnJlc2h0b2tlbg
-scope:[read write admin]
+scope:[read write admin ]
 token_type:Bearer
 user:
   email:"alice@company.com"
@@ -10,4 +10,4 @@ user:
   last_login:"2024-03-01T14:22:00Z"
   mfa_enabled:T
   name:"Alice Ferreira"
-  roles:[admin editor]
+  roles:[admin editor ]
