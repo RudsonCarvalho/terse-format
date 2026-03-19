@@ -1,6 +1,6 @@
 # TERSE
 
-[![Spec](https://img.shields.io/badge/spec-Draft_v0.6-blue)](spec/TERSE-Spec-v0.6.pdf)
+[![Spec](https://img.shields.io/badge/spec-Draft_v0.7-blue)](spec/TERSE-Spec-v0.7.pdf)
 [![License: CC BY 4.0](https://img.shields.io/badge/License-CC_BY_4.0-lightgrey.svg)](https://creativecommons.org/licenses/by/4.0/)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19058364.svg)](https://doi.org/10.5281/zenodo.19058364)
 
@@ -101,8 +101,8 @@ TERSE is optimized for the intersection of two constraints: token efficiency and
 
 | File | Description |
 |---|---|
-| [spec/TERSE-Spec-v0.6.pdf](spec/TERSE-Spec-v0.6.pdf) | Full specification (PDF) |
-| [spec/TERSE-Spec-v0.6.docx](spec/TERSE-Spec-v0.6.docx) | Full specification (Word) |
+| [spec/TERSE-Spec-v0.7.pdf](spec/TERSE-Spec-v0.7.pdf) | Full specification (PDF) |
+| [spec/TERSE-Spec-v0.7.docx](spec/TERSE-Spec-v0.7.docx) | Full specification (Word) |
 | [spec/abnf/terse.abnf](spec/abnf/terse.abnf) | ABNF grammar (Appendix A) |
 
 ## Examples
@@ -124,7 +124,7 @@ TERSE is optimized for the intersection of two constraints: token efficiency and
 
 ## Status
 
-**Draft v0.6** — not yet ratified. The specification is open for community review. Sections 11 (Open Questions) and 13 (Security Considerations) are still under discussion. Target ratification: v1.0.
+**Draft v0.7** — not yet ratified. The specification is open for community review. Sections 11 (Open Questions) and 13 (Security Considerations) are still under discussion. Target ratification: v1.0.
 
 Contributions and issue reports are welcome.
 
