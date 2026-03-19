@@ -1,0 +1,13 @@
+// C.3 - LLM Tool Call (function calling schema + response)
+model: gpt-4o
+usage: {prompt_tokens:312 completion_tokens:87 total_tokens:399}
+finish_reason: tool_calls
+message:
+  {
+  role: assistant
+  content: ~
+  }
+tool_calls:
+  #[id type function_name arguments]
+  call_abc123 function search_products {query:"wireless headphones" max_price:300 in_stock:T}
+  call_def456 function get_user_cart {user_id:user_789}
