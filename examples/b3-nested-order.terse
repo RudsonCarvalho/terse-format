@@ -1,21 +1,14 @@
-// B.3 — Deeply Nested Order
-orderId: ORD-88421
-status: confirmed
-customer: {id:1042 name:"Rafael Torres" email:"r@email.com"}
-shipping:
-  {
-  address: "Rua das Flores, 123"
-  city: "São Paulo"
-  method: express
-  estimatedDays: 2
-  }
+// B.3 - Deeply Nested Order
+customer:{email:"r@email.com" id:1042 name:"Rafael Torres" }
 items:
-  #[sku name qty unitPrice]
-  PRD-001 "Notebook Pro 15" 1 4599.90
-  PRD-002 "Mouse Wireless" 2 149.90
-payment:
-  {
-  method: credit_card
-  installments: 12
-  total: 4924.70
-  }
+  #[name qty sku unitPrice ]
+  "Notebook Pro 15" 1 PRD-001 4599.9 
+  "Mouse Wireless" 2 PRD-002 149.9 
+orderId:ORD-88421
+payment:{installments:12 method:credit_card total:4924.7 }
+shipping:
+  address:"Rua das Flores, 123"
+  city:"São Paulo"
+  estimatedDays:2
+  method:express
+status:confirmed
