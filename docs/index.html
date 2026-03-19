@@ -242,29 +242,29 @@
           <th>Heterogeneous arrays</th>
           <th>Typed nulls</th>
           <th>Schema arrays</th>
-          <th>LLM-readable</th>
+          <th>LLM-optimized tokens</th>
         </tr>
       </thead>
       <tbody>
         <tr>
           <td>JSON</td>
           <td style="color:var(--green)">✓</td><td style="color:var(--green)">✓</td><td style="color:var(--green)">✓</td>
-          <td style="color:var(--red)">✗</td><td style="color:var(--green)">✓</td>
+          <td style="color:var(--red)">✗</td><td style="color:var(--red)">✗</td>
         </tr>
         <tr>
           <td>YAML</td>
           <td style="color:var(--green)">✓</td><td style="color:var(--green)">✓</td><td style="color:var(--green)">✓</td>
-          <td style="color:var(--red)">✗</td><td style="color:var(--yellow)">⚠ verbose</td>
+          <td style="color:var(--red)">✗</td><td style="color:var(--red)">✗</td>
         </tr>
         <tr>
           <td>TOON</td>
           <td style="color:var(--red)">✗</td><td style="color:var(--red)">✗</td><td style="color:var(--red)">✗</td>
-          <td style="color:var(--red)">✗</td><td style="color:var(--green)">✓</td>
+          <td style="color:var(--red)">✗</td><td style="color:var(--red)">✗</td>
         </tr>
         <tr>
           <td>CSV</td>
           <td style="color:var(--red)">✗</td><td style="color:var(--red)">✗</td><td style="color:var(--red)">✗</td>
-          <td style="color:var(--red)">✗</td><td style="color:var(--yellow)">✓ flat only</td>
+          <td style="color:var(--red)">✗</td><td style="color:var(--red)">✗</td>
         </tr>
         <tr style="background:rgba(88,166,255,.05)">
           <td><strong>TERSE</strong></td>
@@ -295,35 +295,35 @@
         <tr>
           <td>User list (flat, 5 records)</td>
           <td><div class="bw"><div class="bar" style="width:52px"></div><span class="hl">40&ndash;55%</span></div></td>
-          <td><div class="bw"><div class="bar bp" style="width:17px"></div><span>15&ndash;20%</span></div></td>
+          <td><div class="bw"><div class="bar bp" style="width:20px"></div><span>18&ndash;22%</span></div></td>
           <td><div class="bw"><div class="bar by" style="width:52px"></div><span>40&ndash;55%</span></div></td>
           <td><div class="bw"><div class="bar bb" style="width:52px"></div><span>40&ndash;55%</span></div></td>
         </tr>
         <tr>
           <td>Structured logs (5 entries)</td>
           <td><div class="bw"><div class="bar" style="width:41px"></div><span class="hl">35&ndash;45%</span></div></td>
-          <td><div class="bw"><div class="bar bp" style="width:17px"></div><span>15&ndash;20%</span></div></td>
+          <td><div class="bw"><div class="bar bp" style="width:20px"></div><span>18&ndash;22%</span></div></td>
           <td><div class="bw"><div class="bar by" style="width:41px"></div><span>35&ndash;45%</span></div></td>
           <td><div class="bw"><div class="bar bb" style="width:41px"></div><span>35&ndash;45%</span></div></td>
         </tr>
         <tr>
           <td>Product catalog (nested + array)</td>
           <td><div class="bw"><div class="bar" style="width:36px"></div><span class="hl">30&ndash;40%</span></div></td>
-          <td><div class="bw"><div class="bar bp" style="width:20px"></div><span>18&ndash;22%</span></div></td>
+          <td><div class="bw"><div class="bar bp" style="width:22px"></div><span>20&ndash;25%</span></div></td>
           <td><div class="bw"><div class="bar by" style="width:12px"></div><span>10&ndash;15%</span></div></td>
           <td><span class="na">N/A</span></td>
         </tr>
         <tr>
           <td>Complex order (deep nesting)</td>
           <td><div class="bw"><div class="bar" style="width:31px"></div><span class="hl">25&ndash;35%</span></div></td>
-          <td><div class="bw"><div class="bar bp" style="width:18px"></div><span>15&ndash;20%</span></div></td>
+          <td><div class="bw"><div class="bar bp" style="width:22px"></div><span>20&ndash;25%</span></div></td>
           <td><div class="bw"><div class="bar by" style="width:7px"></div><span>5&ndash;10%</span></div></td>
           <td><span class="na">N/A</span></td>
         </tr>
         <tr>
           <td>AI tool call payload (deep)</td>
           <td><div class="bw"><div class="bar" style="width:26px"></div><span class="hl">20&ndash;30%</span></div></td>
-          <td><div class="bw"><div class="bar bp" style="width:15px"></div><span>12&ndash;18%</span></div></td>
+          <td><div class="bw"><div class="bar bp" style="width:20px"></div><span>18&ndash;22%</span></div></td>
           <td><div class="bw"><div class="bar by" style="width:7px"></div><span>5&ndash;10%</span></div></td>
           <td><span class="na">N/A</span></td>
         </tr>
@@ -335,8 +335,8 @@
       <p style="margin-bottom:8px"><span style="color:var(--text);font-weight:600">App config &amp; structured configs</span> &mdash; TERSE saves 35&ndash;45% because configs are typically shallow objects with nested sub-objects. TOON only manages 15&ndash;20% here: it handles flat rows well but falls apart as soon as nesting appears.</p>
       <p style="margin-bottom:8px"><span style="color:var(--text);font-weight:600">User lists &amp; logs</span> &mdash; All three formats perform similarly (~40&ndash;55%). This is the <em>easy case</em>: flat, uniform, tabular data where every format shines. If your data always looks like this, any option works.</p>
       <p style="margin-bottom:8px"><span style="color:var(--text);font-weight:600">Product catalogs, orders, AI payloads</span> &mdash; This is where TERSE separates itself. TOON drops to 5&ndash;15% because it cannot represent nested objects at all. CSV disappears entirely (N/A). TERSE holds 20&ndash;40% savings even in deeply nested structures.</p>
-      <p style="margin-bottom:12px"><span style="color:var(--text);font-weight:600">YAML vs TERSE</span> &mdash; YAML supports full nesting but pays a verbosity tax: arrays use <code style="font-family:var(--mono);font-size:.8rem;color:var(--purple)">- item</code> per line instead of <code style="font-family:var(--mono);font-size:.8rem;color:var(--green)">[a b c]</code>, and booleans cost <code style="font-family:var(--mono);font-size:.8rem;color:var(--purple)">true</code>/<code style="font-family:var(--mono);font-size:.8rem;color:var(--purple)">false</code> instead of <code style="font-family:var(--mono);font-size:.8rem;color:var(--green)">T</code>/<code style="font-family:var(--mono);font-size:.8rem;color:var(--green)">F</code>. YAML also has no schema-array optimization for tabular data. The result: ~20&ndash;24% savings vs ~35&ndash;45% for TERSE &mdash; even in the document types where YAML is competitive.</p>
-      <p style="color:var(--accent);font-weight:600">The core message: TOON and CSV only win on flat, uniform data &mdash; the easy case. YAML wins on readability but not on token count. TERSE delivers consistent savings across <em>every</em> structure, including the complex cases that dominate real LLM pipelines.</p>
+      <p style="margin-bottom:12px"><span style="color:var(--text);font-weight:600">YAML vs TERSE</span> &mdash; YAML supports full nesting but pays a verbosity tax: arrays use <code style="font-family:var(--mono);font-size:.8rem;color:var(--purple)">- item</code> per line instead of <code style="font-family:var(--mono);font-size:.8rem;color:var(--green)">[a b c]</code>, and booleans cost <code style="font-family:var(--mono);font-size:.8rem;color:var(--purple)">true</code>/<code style="font-family:var(--mono);font-size:.8rem;color:var(--purple)">false</code> instead of <code style="font-family:var(--mono);font-size:.8rem;color:var(--green)">T</code>/<code style="font-family:var(--mono);font-size:.8rem;color:var(--green)">F</code>. YAML also has no schema-array optimization for tabular data. The result: ~20&ndash;24% fewer tokens than JSON vs ~47% for TERSE &mdash; YAML is a genuine improvement, but TERSE was designed specifically for token efficiency, not human authoring.</p>
+      <p style="color:var(--accent);font-weight:600">The core message: TOON and CSV only win on flat, uniform data &mdash; the easy case. YAML wins on human readability but not on token count. TERSE delivers consistent savings across <em>every</em> structure, including the complex cases that dominate real LLM pipelines.</p>
     </div>
   </div>
 </section>
