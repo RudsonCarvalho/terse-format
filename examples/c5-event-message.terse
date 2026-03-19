@@ -2,7 +2,7 @@
 correlation_id:req_9f8e7d6c
 event_id:evt_01HPQR8XYZABCDEF
 event_type:order.status_changed
-metadata:{dead_letter_topic:orders.dlq max_retries:3 retry_count:0}
+metadata:{dead_letter_topic:orders.dlq max_retries:3 retry_count:0 }
 payload:
   changed_by:system
   new_status:shipped
