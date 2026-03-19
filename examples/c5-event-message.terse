@@ -1,20 +1,13 @@
-// C.5 - Microservice Event (message bus / event sourcing)
-event_id: evt_01HPQR8XYZABCDEF
-event_type: order.status_changed
-version: 2
-timestamp: "2024-03-15T10:42:00.000Z"
-source: order-service
-correlation_id: req_9f8e7d6c
+// C.5 - Microservice Event (event sourcing / message bus)
+correlation_id:req_9f8e7d6c
+event_id:evt_01HPQR8XYZABCDEF
+event_type:order.status_changed
+metadata:{dead_letter_topic:orders.dlq max_retries:3 retry_count:0}
 payload:
-  {
-  order_id: ORD-88421
-  previous_status: pending
-  new_status: shipped
-  changed_by: system
-  }
-metadata:
-  {
-  retry_count: 0
-  max_retries: 3
-  dead_letter_topic: orders.dlq
-  }
+  changed_by:system
+  new_status:shipped
+  order_id:ORD-88421
+  previous_status:pending
+source:order-service
+timestamp:"2024-03-15T10:42:00.000Z"
+version:2
