@@ -133,7 +133,7 @@
     .pg-tok{font-family:var(--mono);font-size:.75rem;padding:2px 8px;border-radius:4px;background:rgba(139,148,158,.12);color:var(--muted)}
     .pg-tok.better{background:rgba(63,185,80,.15);color:var(--green);font-weight:700}
     #pg-json,#pg-terse{font-family:var(--mono);font-size:.82rem;line-height:1.65;background:var(--bg);color:var(--text);border:none;resize:none;padding:16px;height:300px;outline:none;width:100%;tab-size:2}
-    #pg-terse{color:#c9d1d9}
+    #pg-terse{color:#c9d1d9;cursor:text}
     #pg-msg{margin-top:10px;font-size:.85rem;min-height:1.5em;font-family:var(--mono)}
     .msg-ok{color:var(--green)}
     .msg-warn{color:var(--yellow)}
@@ -283,10 +283,10 @@
       </div>
       <div class="pg-panel" id="pg-right">
         <div class="pg-hdr">
-          <span class="pg-lbl">TERSE output</span>
+          <span class="pg-lbl">TERSE output <span style="font-weight:400;color:#484f58">(editable)</span></span>
           <span class="pg-tok" id="terse-tok">—</span>
         </div>
-        <textarea id="pg-terse" spellcheck="false" autocomplete="off" readonly placeholder="TERSE will appear here…"></textarea>
+        <textarea id="pg-terse" spellcheck="false" autocomplete="off" placeholder="TERSE will appear here — or type TERSE directly…"></textarea>
       </div>
     </div>
     <div id="pg-msg"></div>
@@ -991,6 +991,12 @@ function roundTrip(){
 }
 
 document.getElementById('pg-json').addEventListener('input', convert);
+document.getElementById('pg-terse').addEventListener('input', function(){
+  // When user edits TERSE manually, update its token count only
+  const jTok = estimateTokens(document.getElementById('pg-json').value);
+  updateTok('terse-tok', estimateTokens(this.value), jTok);
+  setMsg('',''); // clear status until they click the button
+});
 document.getElementById('pg-btn').addEventListener('click', roundTrip);
 document.getElementById('pg-example').addEventListener('change', function(){
   const ex=EXAMPLES[this.value];
