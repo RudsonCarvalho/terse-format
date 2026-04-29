@@ -1,0 +1,29 @@
+; Agent context block — 3 active tools from a catalog of 47
+; Pattern: TOOLS v1.0 [active/total]
+
+TOOLS v1.0 [3/47]
+  MCP gmail v1.2
+    TOOL gmail_send_email
+      PURPOSE: send email via Gmail
+      IN: to:string, subject:string, body:string, cc:string?
+      OUT: message_id:string
+      ERR: auth_failed | quota_exceeded | invalid_recipient
+      WHEN: user wants to send or compose an email message
+      TAGS: gmail, email, communication
+
+  MCP google_drive v2.0
+    TOOL drive_list_files
+      PURPOSE: list files in Google Drive
+      IN: folder_id:string?, query:string?, max_results:int?
+      OUT: files:array[object]
+      ERR: auth_failed | quota_exceeded | not_found
+      WHEN: user requests to list or browse files in Google Drive
+      TAGS: drive, files, list
+
+    TOOL drive_read_file
+      PURPOSE: read file content from Google Drive
+      IN: file_id:string
+      OUT: content:string, mime_type:string
+      ERR: auth_failed | not_found | permission_denied
+      WHEN: user wants to read or open a file from Google Drive
+      TAGS: drive, files, read

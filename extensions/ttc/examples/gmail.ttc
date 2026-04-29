@@ -1,0 +1,16 @@
+MCP gmail v1.2
+  TOOL gmail_send_email
+    PURPOSE: send email via Gmail
+    IN: to:string, subject:string, body:string, cc:string?
+    OUT: message_id:string
+    ERR: auth_failed | quota_exceeded | invalid_recipient
+    WHEN: user wants to send or compose an email message
+    TAGS: gmail, email, communication
+
+  TOOL gmail_read_inbox
+    PURPOSE: read emails from Gmail inbox
+    IN: max_results:int?, query:string?
+    OUT: messages:array[object]
+    ERR: auth_failed | quota_exceeded
+    WHEN: user wants to read or list emails in their inbox
+    TAGS: gmail, email, read

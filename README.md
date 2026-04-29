@@ -122,6 +122,12 @@ TERSE is optimized for the intersection of two constraints: token efficiency and
 | [examples/c7-structured-logs.terse](examples/c7-structured-logs.terse) | Structured log entries |
 | [examples/c8-feature-flags.terse](examples/c8-feature-flags.terse) | Feature flag configuration |
 
+## Extensions
+
+| Extension | Version | Description |
+|---|---|---|
+| [extensions/ttc/](extensions/ttc/) | v1.0 | **TERSE Tool Catalog (TTC)** — compact, semantically enriched MCP tool catalog format. Achieves 66.6% token reduction over MCP JSON Schema while adding explicit WHEN trigger conditions, ERR failure contracts, and TAGS retrieval taxonomy. |
+
 ## Status
 
 **Draft v0.7** — not yet ratified. The specification is open for community review. Sections 11 (Open Questions) and 13 (Security Considerations) are still under discussion. Target ratification: v1.0.
