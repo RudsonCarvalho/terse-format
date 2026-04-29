@@ -124,9 +124,9 @@ TERSE is optimized for the intersection of two constraints: token efficiency and
 
 ## Extensions
 
-| Extension | Version | Description |
-|---|---|---|
-| [extensions/ttc/](extensions/ttc/) | v1.0 | **TERSE Tool Catalog (TTC)** — compact, semantically enriched MCP tool catalog format. Achieves 66.6% token reduction over MCP JSON Schema while adding explicit WHEN trigger conditions, ERR failure contracts, and TAGS retrieval taxonomy. |
+| Extension | Version | Status | DOI |
+|---|---|---|---|
+| [TTC — TERSE Tool Catalog](extensions/ttc/) | v1.0 | Stable | [10.5281/zenodo.19869007](https://doi.org/10.5281/zenodo.19869007) |
 
 ## Status
 

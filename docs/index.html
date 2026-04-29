@@ -152,6 +152,8 @@
       <a href="#why">Why TERSE</a>
       <a href="#implementations">Install</a>
       <a href="#spec">Spec</a>
+      <a href="#extensions">Extensions</a>
+      <a href="https://github.com/RudsonCarvalho/terse-format/wiki">Wiki</a>
       <a href="https://github.com/RudsonCarvalho/terse-format">GitHub</a>
     </div>
   </div>
@@ -159,7 +161,7 @@
 
 <section id="hero">
   <div class="container">
-    <div class="badge">Draft v0.7 &middot; Full JSON data model &middot; CC BY 4.0</div>
+    <div class="badge">Stable v0.7 &middot; Full JSON data model &middot; CC BY 4.0</div>
     <h1>TERSE</h1>
     <p class="tagline">A <strong>token-efficient</strong> alternative to JSON, built for LLMs &mdash; covers the full JSON data model with <strong>30&ndash;55% fewer tokens</strong>.</p>
     <div class="cta">
@@ -172,6 +174,7 @@
       <div class="stat"><div class="value">100%</div><div class="label">JSON data model coverage</div></div>
       <div class="stat"><div class="value">5</div><div class="label">design principles</div></div>
       <div class="stat"><div class="value">4</div><div class="label">reference implementations</div></div>
+      <div class="stat"><div class="value">66.6%</div><div class="label">token reduction for MCP tool catalogs (TTC)</div></div>
     </div>
   </div>
 </section>
@@ -444,6 +447,19 @@
   </div>
 </section>
 
+<section id="extensions">
+  <div class="container">
+    <h2>Extensions</h2>
+    <p class="sub">Domain-specific extensions that build on the TERSE core format.</p>
+    <div class="card" style="max-width:640px">
+      <div class="num">TTC v1.0 &mdash; Stable</div>
+      <h3>TERSE Tool Catalog</h3>
+      <p style="margin-bottom:12px">66.6% token reduction for MCP tool catalogs. Adds <code>ERR</code>, <code>WHEN</code>, and <code>TAGS</code> &mdash; fields absent from MCP JSON Schema &mdash; as explicit first-class fields for LLM tool-selection reasoning.</p>
+      <p style="font-size:.85rem;color:var(--muted)">DOI: <a href="https://doi.org/10.5281/zenodo.19869007">10.5281/zenodo.19869007</a> &middot; <a href="https://github.com/RudsonCarvalho/terse-format/tree/main/extensions/ttc">Browse extension &rarr;</a></p>
+    </div>
+  </div>
+</section>
+
 <section id="implementations">
   <div class="container">
     <h2>Implementations</h2>
@@ -518,19 +534,23 @@ Terse<span class="p">.</span>parse<span class="p">(</span><span class="s">"{name
 <section id="spec">
   <div class="container">
     <h2>Specification</h2>
-    <p class="sub">TERSE-Spec-v0.7 &middot; Draft &middot; CC BY 4.0</p>
+    <p class="sub">TERSE-Spec-v0.7 &middot; Stable &middot; CC BY 4.0</p>
     <div class="splinks">
       <a href="https://github.com/RudsonCarvalho/terse-format/raw/main/spec/TERSE-Spec-v0.7.pdf"  class="btn btn-primary">Download PDF</a>
       <a href="https://github.com/RudsonCarvalho/terse-format/raw/main/spec/TERSE-Spec-v0.7.docx" class="btn btn-secondary">Download DOCX</a>
       <a href="https://github.com/RudsonCarvalho/terse-format/raw/main/spec/abnf/terse.abnf"       class="btn btn-secondary">ABNF Grammar</a>
       <a href="https://github.com/RudsonCarvalho/terse-format/tree/main/examples" class="btn btn-secondary">Examples</a>
     </div>
+    <div class="callout" style="margin-top:28px">
+      <h4>TTC Extension v1.0</h4>
+      <p>TERSE Tool Catalog &mdash; compact, semantically enriched MCP tool catalog format. <strong>DOI: <a href="https://doi.org/10.5281/zenodo.19869007" style="color:var(--accent)">10.5281/zenodo.19869007</a></strong></p>
+    </div>
   </div>
 </section>
 
 <footer>
   <div class="container">
-    <p><strong>TERSE</strong> &middot; Draft v0.7 &middot; <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> &middot; <a href="https://github.com/RudsonCarvalho/terse-format">github.com/RudsonCarvalho/terse-format</a></p>
+    <p><strong>TERSE</strong> &middot; Stable v0.7 &middot; <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> &middot; <a href="https://github.com/RudsonCarvalho/terse-format">github.com/RudsonCarvalho/terse-format</a></p>
     <p style="margin-top:8px" class="ghost">Implementations: MIT &middot; <a href="https://github.com/RudsonCarvalho/terse-js">terse-js</a> &middot; <a href="https://github.com/RudsonCarvalho/terse-py">terse-py</a> &middot; <a href="https://github.com/RudsonCarvalho/terse-go">terse-go</a> &middot; <a href="https://github.com/RudsonCarvalho/terse-java">terse-java</a></p>
   </div>
 </footer>
